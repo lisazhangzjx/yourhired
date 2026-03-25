@@ -864,7 +864,7 @@ function sub(code) {
     const me=room.players?.[ME.id];
     if(me?.role&&me.role!=='pending') ME.role=me.role;
     if(me?.cnum) ME.cnum=me.cnum;
-    if(room.apiKey && !LOCAL_API_KEY) LOCAL_API_KEY=atob(room.apiKey); // cache key locally
+    if(room.apiKey) LOCAL_API_KEY=atob(room.apiKey); // cache key locally
     if(room.empAccent) document.documentElement.style.setProperty('--acc', room.empAccent);
     dispatch(room);
   });
@@ -1545,6 +1545,50 @@ async function evaluateMeatwork(r, report){
   await db.ref(`rooms/${ME.room}/status`).set('meatwork_done');
 }
 
+
+function renderMeatworkDone(r){
+  const emp=EMPLOYERS[r.empId]||EMPLOYERS.panoptikon;
+  const mw=r.meatwork||{};
+  const ev=mw.evaluation||{};
+  const winnerId=r.meatwork?.winnerId;
+
+  // Non-hired candidates stay on NOT HIRED screen — don't move them
+  if(ME.id!==winnerId && !ME.host) return;
+
+  const loading=document.getElementById('mweval-loading');
+  const body=document.getElementById('mweval-body');
+
+  if(!ev.text){
+    loading.style.display='block'; body.style.display='none';
+    go('s-mw-eval'); return;
+  }
+
+  loading.style.display='none'; body.style.display='block';
+  document.getElementById('mweval-logo').textContent=emp.logo;
+  document.getElementById('mweval-emp-name').textContent=emp.name;
+  document.getElementById('mweval-emp-lbl').textContent=`${emp.name} — ${emp.division}`;
+  document.getElementById('mweval-emp-lbl').style.color=emp.accent;
+  document.getElementById('mweval-text').textContent=ev.text||'';
+  if(ev.uv||ev.ev){
+    document.getElementById('mweval-uv').textContent=ev.uv||'—';
+    document.getElementById('mweval-uv').style.color=emp.accent;
+    document.getElementById('mweval-ev').textContent=ev.ev||'—';
+    document.getElementById('mweval-scores-block').style.display='block';
+  }
+  if(ev.verdict){
+    document.getElementById('mweval-verdict').textContent=ev.verdict;
+    document.getElementById('mweval-verdict').style.color=emp.accent;
+    const vb=document.getElementById('mweval-verdict-box');
+    vb.style.borderColor=emp.accent+'55';
+    vb.style.background=emp.accent+'10';
+  }
+  if(mw.media?.length){
+    const row=document.getElementById('mweval-media-row');
+    row.style.display='flex';
+    row.innerHTML=mw.media.map(m=>`<div class="eval-thumb" style="border-color:var(--line)"><img src="${m.data}" alt="${m.name||''}"></div>`).join('');
+  }
+  go('s-mw-eval');
+}
 
 async function callAnthropic(apiKey,system,user,maxTokens=300,model='claude-haiku-4-5-20251001'){
   const key = apiKey || LOCAL_API_KEY;

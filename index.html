@@ -224,6 +224,7 @@ body{font-family:'Courier Prime',monospace;background:var(--bg);color:var(--ink)
       <p style="font-size:14px;line-height:1.9;color:var(--muted);margin-bottom:28px">An AI employer needs a human hired. Run a blind interview. One candidate is secretly an AI. The winner does the job for real — then gets evaluated by the machine that hired them.</p>
       <button class="btn-r" onclick="go('s-create')">I AM THE HIRE MANAGER</button>
       <button class="btn-k" style="margin-top:8px" onclick="go('s-join')">I AM A CANDIDATE</button>
+      <button class="btn-k" style="margin-top:20px;font-size:9px;letter-spacing:2px;color:var(--muted);border-color:var(--line)" onclick="clearSession()">↺ CLEAR SESSION / START FRESH</button>
     </div>
   </div>
 </div>
@@ -368,14 +369,11 @@ body{font-family:'Courier Prime',monospace;background:var(--bg);color:var(--ink)
         <div class="tbar-w"><div class="tbar-f" id="hr-tbar" style="width:100%"></div></div>
         <div id="hr-listening-msg" class="status-c">
           <span class="status-big">LISTEN</span>
-          <span style="font-size:12px;color:var(--muted)">Candidates are preparing. They will speak when called.</span>
-        </div>
-        <div id="hr-answers" style="display:none;margin-bottom:16px">
-          <div class="sec" style="margin-bottom:12px">All Answers — Reference</div>
-          <div id="hr-answers-list"></div>
+          <span style="font-size:12px;color:var(--muted)">Candidates are preparing. Call each number to hear their answer.</span>
         </div>
         <div id="hr-pick-btn" style="display:none">
-          <button class="btn-r" onclick="goJudging()">ALL SPOKEN — SELECT BEST ANSWER →</button>
+          <p style="font-size:13px;font-weight:700;margin-bottom:14px;text-align:center">Who gave the best answer?</p>
+          <div id="hr-cand-btns" style="display:flex;flex-direction:column;gap:8px"></div>
         </div>
       </div>
     </div>
@@ -1085,22 +1083,40 @@ function renderAnswering(r) {
     document.getElementById('hr-ready').style.display='none';
     document.getElementById('hr-listen').style.display='block';
     document.getElementById('hr-pick-btn').style.display='none';
-    document.getElementById('hr-answers').style.display='none';
     document.getElementById('hr-listening-msg').style.display='block';
     document.getElementById('hr-q-show').textContent=q;
     go('s-hire-r');
     tick(st,'hr-timer','hr-tbar',()=>{
       document.getElementById('hr-listening-msg').style.display='none';
-      const al=document.getElementById('hr-answers-list'); al.innerHTML='';
-      const answers=rd.answers||{};
+      // Build one button per candidate — HM picks by ear, no text shown
+      const btns=document.getElementById('hr-cand-btns'); btns.innerHTML='';
       Object.entries(r.players||{}).filter(([,p])=>p.role!=='hire_manager').sort((a,b)=>a[1].cnum-b[1].cnum).forEach(([pid,p])=>{
-        const ans=answers[pid]||'— no answer submitted —';
-        const div=document.createElement('div');
-        div.style.cssText='border:1px solid var(--line);padding:12px 14px;margin-bottom:10px;';
-        div.innerHTML=`<div style="font-size:9px;letter-spacing:2px;text-transform:uppercase;color:var(--muted);margin-bottom:6px">Candidate ${p.cnum}</div><div style="font-size:14px;line-height:1.7">${ans}</div>`;
-        al.appendChild(div);
+        const btn=document.createElement('button');
+        btn.className='btn-r';
+        btn.textContent=`CANDIDATE ${p.cnum}`;
+        btn.style.cssText='font-size:22px;letter-spacing:4px;padding:18px;';
+        btn.onclick=async()=>{
+          // Disable all buttons immediately
+          btns.querySelectorAll('button').forEach(b=>b.disabled=true);
+          btn.textContent=`✓ CANDIDATE ${p.cnum} SELECTED`;
+          const rn2=room.currentRound;
+          const aiWon=pid===room.aiPlayerId;
+          const newAI=(room.scores?.ai||0)+(aiWon?1:0);
+          const newHU=(room.scores?.human||0)+(aiWon?0:1);
+          const picks=room.picks||{};
+          const newPicks={...picks,[pid]:(picks[pid]||0)+1};
+          await db.ref().update({
+            [`rooms/${ME.room}/rounds/${rn2}/winnerPick`]:pid,
+            [`rooms/${ME.room}/rounds/${rn2}/winnerCnum`]:p.cnum,
+            [`rooms/${ME.room}/rounds/${rn2}/aiWon`]:aiWon,
+            [`rooms/${ME.room}/scores/ai`]:newAI,
+            [`rooms/${ME.room}/scores/human`]:newHU,
+            [`rooms/${ME.room}/picks`]:newPicks,
+            [`rooms/${ME.room}/status`]:'round_result'
+          });
+        };
+        btns.appendChild(btn);
       });
-      document.getElementById('hr-answers').style.display='block';
       document.getElementById('hr-pick-btn').style.display='block';
     });
   } else if(ME.role==='human'){
@@ -1266,28 +1282,8 @@ async function lockAnswer(){
 async function goJudging(){await db.ref(`rooms/${ME.room}/status`).set('judging');}
 
 function renderJudging(r){
-  if(ME.host){
-    const rn=r.currentRound;
-    document.getElementById('jud-m').textContent=`ROUND ${rn} / ${r.numRounds}`;
-    document.getElementById('jud-round').textContent=rn;
-    judgePick=null; document.getElementById('jud-confirm').disabled=true;
-    const list=document.getElementById('jud-answers-list'); list.innerHTML='';
-    const answers=r.rounds?.[rn]?.answers||{};
-    Object.entries(r.players||{}).filter(([,p])=>p.role!=='hire_manager').sort((a,b)=>a[1].cnum-b[1].cnum).forEach(([pid,p])=>{
-      const ans=answers[pid]||'— no answer —';
-      const card=document.createElement('div');
-      card.className='cand-answer-card'; card.dataset.pid=pid;
-      card.innerHTML=`<div class="cand-n">Candidate ${p.cnum}</div><div class="cand-txt">${ans}</div>`;
-      card.onclick=()=>{
-        judgePick=pid;
-        list.querySelectorAll('.cand-answer-card').forEach(c=>{c.classList.remove('picked');c.querySelectorAll('div').forEach(d=>d.style.color='');});
-        card.classList.add('picked');
-        document.getElementById('jud-confirm').disabled=false;
-      };
-      list.appendChild(card);
-    });
-    go('s-judging');
-  } else {pwait('Processing','Human evaluation in progress');}
+  // HM picks inline now — judging status only means candidates wait
+  if(!ME.host){ pwait('Processing','Human evaluation in progress'); }
 }
 
 async function confirmJudge(){
@@ -1686,6 +1682,12 @@ function clearTick(){if(timerLoop){clearInterval(timerLoop);timerLoop=null;}}
 // ══════════════════════════════════════════════════════════════════
 // UTIL
 // ══════════════════════════════════════════════════════════════════
+function clearSession(){
+  localStorage.removeItem('yrh_room_'+ME.id);
+  localStorage.removeItem('yrh_host_'+ME.id);
+  location.reload();
+}
+
 function go(id){
   document.querySelectorAll('.scr').forEach(s=>s.classList.remove('on'));
   document.getElementById(id)?.classList.add('on');

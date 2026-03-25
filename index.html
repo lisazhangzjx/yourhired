@@ -864,7 +864,7 @@ function sub(code) {
     if(me?.role&&me.role!=='pending') ME.role=me.role;
     if(me?.cnum) ME.cnum=me.cnum;
     if(room.apiKey && !LOCAL_API_KEY) LOCAL_API_KEY=room.apiKey; // cache key locally
-    if(room.empAccent) setAccent(room.empAccent);
+    if(room.empAccent) document.documentElement.style.setProperty('--acc', room.empAccent);
     dispatch(room);
   });
 }

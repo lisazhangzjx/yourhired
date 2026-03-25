@@ -864,7 +864,16 @@ function sub(code) {
     const me=room.players?.[ME.id];
     if(me?.role&&me.role!=='pending') ME.role=me.role;
     if(me?.cnum) ME.cnum=me.cnum;
-    if(room.apiKey) LOCAL_API_KEY=atob(room.apiKey); // cache key locally
+    if(room.apiKey){
+      try{
+        const decoded = atob(room.apiKey);
+        // atob succeeds — check if result looks like an Anthropic key
+        LOCAL_API_KEY = decoded.startsWith('sk-') ? decoded : room.apiKey;
+      }catch(e){
+        // Not valid base64 — use as-is (legacy plain text key)
+        LOCAL_API_KEY = room.apiKey;
+      }
+    } // cache key locally
     if(room.empAccent) document.documentElement.style.setProperty('--acc', room.empAccent);
     dispatch(room);
   });
@@ -1511,6 +1520,7 @@ async function evaluateMeatwork(r, report){
   const prompt=`WORKER PROFILE:\nName: ${r.meatwork?.winnerName||'Unknown'}\nHired for: ${r.taskTitle} at ${r.empName}\n\nFIELD CONTEXT: This worker was hired through a competitive interview. Evaluate with the full weight of an employer.\n\nTASK ASSIGNED: ${r.taskIrl}${mediaNote}\n\nFIELD REPORT:\n${report}\n\n---\nINSTRUCTION: Reference at least one specific detail from the field report or submitted photos. Do not write generically.`;
 
   const key = LOCAL_API_KEY || r.apiKey;
+  console.log('Eval key prefix:', key?.slice(0,20), 'valid:', key?.startsWith('sk-'));
   let evalText='', uv=null, ev=null, verdict=null;
   try{
     console.log('Running eval on HM device, key prefix:', key?.slice(0,20));

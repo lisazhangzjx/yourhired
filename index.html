@@ -1317,10 +1317,16 @@ function renderRoundResult(r){
   const container=document.getElementById('rres-candidates'); container.innerHTML='';
   Object.entries(r.players||{}).filter(([,p])=>p.role!=='hire_manager').sort((a,b)=>a[1].cnum-b[1].cnum).forEach(([pid,p])=>{
     const isWinner=pid===winnerPid;
-    const ans=answers[pid]||'— no answer submitted —';
     const card=document.createElement('div');
     card.className='rres-card'+(isWinner?' winner':'');
-    card.innerHTML=`<div class="rres-hdr"><span class="rres-n">Candidate ${p.cnum}</span>${isWinner?'<span class="win-badge">★ SELECTED</span>':''}</div><div class="rres-txt">${ans}</div>`;
+    if(ME.host){
+      // HM only sees who was selected — no answer text
+      card.innerHTML=`<div class="rres-hdr"><span class="rres-n">Candidate ${p.cnum}</span>${isWinner?'<span class="win-badge">★ YOUR PICK</span>':''}</div>`;
+    } else {
+      // Candidates see the full answers
+      const ans=answers[pid]||'— no answer submitted —';
+      card.innerHTML=`<div class="rres-hdr"><span class="rres-n">Candidate ${p.cnum}</span>${isWinner?'<span class="win-badge">★ SELECTED</span>':''}</div><div class="rres-txt">${ans}</div>`;
+    }
     container.appendChild(card);
   });
   if(ME.host){

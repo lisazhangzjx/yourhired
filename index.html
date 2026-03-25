@@ -786,7 +786,7 @@ async function createRoom() {
     taskType:randTask.type, taskPay:randTask.pay,
     empName:emp.name, empDivision:emp.division, empLogo:emp.logo, empAccent:emp.accent,
     numPlayers:G.np, numRounds:3, currentRound:0,
-    status:'lobby', hostId:ME.id, aiPlayerId:null, apiKey:btoa(apiKey),
+    status:'lobby', hostId:ME.id, aiPlayerId:null, _ak:apiKey,
     joinCounter:0,
     scores:{ai:0,human:0},
     picks:{},
@@ -864,16 +864,7 @@ function sub(code) {
     const me=room.players?.[ME.id];
     if(me?.role&&me.role!=='pending') ME.role=me.role;
     if(me?.cnum) ME.cnum=me.cnum;
-    if(room.apiKey){
-      try{
-        const decoded = atob(room.apiKey);
-        // atob succeeds — check if result looks like an Anthropic key
-        LOCAL_API_KEY = decoded.startsWith('sk-') ? decoded : room.apiKey;
-      }catch(e){
-        // Not valid base64 — use as-is (legacy plain text key)
-        LOCAL_API_KEY = room.apiKey;
-      }
-    } // cache key locally
+    if(room._ak) LOCAL_API_KEY = room._ak; // cache key locally
     if(room.empAccent) document.documentElement.style.setProperty('--acc', room.empAccent);
     dispatch(room);
   });
@@ -1118,7 +1109,7 @@ async function genAI(r,q,rn,st){
   const sys=`${emp.interviewPersona}\n\nThe role you are applying for: ${r.taskTitle}\nWhat this role involves: ${r.taskBrief}\nSpecific task if hired: ${r.taskIrl}\n\nCRITICAL: Your answer must be SPECIFIC to the exact question asked. Do not give a generic answer. Reference the question directly. 2-3 sentences only.\n${hist?`\nInterview so far — do NOT repeat these answers:\n${hist}`:''}`;
   let answer='';
   try{
-    const res=await callAnthropic(r.apiKey,sys,`Interview question: ${q}\n\nAnswer this specific question as a human candidate would:`,200,'claude-haiku-4-5-20251001');
+    const res=await callAnthropic(r._ak||LOCAL_API_KEY,sys,`Interview question: ${q}\n\nAnswer this specific question as a human candidate would:`,200,'claude-haiku-4-5-20251001');
     answer=res||fallbackAns(r.taskTitle, q);
   }catch(e){
     console.warn('AI gen error:',e);
@@ -1519,7 +1510,7 @@ async function evaluateMeatwork(r, report){
     : '\nFIELD EVIDENCE: None submitted.';
   const prompt=`WORKER PROFILE:\nName: ${r.meatwork?.winnerName||'Unknown'}\nHired for: ${r.taskTitle} at ${r.empName}\n\nFIELD CONTEXT: This worker was hired through a competitive interview. Evaluate with the full weight of an employer.\n\nTASK ASSIGNED: ${r.taskIrl}${mediaNote}\n\nFIELD REPORT:\n${report}\n\n---\nINSTRUCTION: Reference at least one specific detail from the field report or submitted photos. Do not write generically.`;
 
-  const key = LOCAL_API_KEY || r.apiKey;
+  const key = LOCAL_API_KEY || r._ak;
   console.log('Eval key prefix:', key?.slice(0,20), 'valid:', key?.startsWith('sk-'));
   let evalText='', uv=null, ev=null, verdict=null;
   try{
@@ -1675,7 +1666,7 @@ window.addEventListener('load',()=>{
           ME.name = me.name || '';
           ME.role = me.role;
           ME.cnum = me.cnum || null;
-          if(r.apiKey && !LOCAL_API_KEY) LOCAL_API_KEY = r.apiKey;
+          if(r._ak) LOCAL_API_KEY = r._ak;
           sub(savedRoom);
         }).catch(()=>{ go('s-home'); showConsentBanner(); });
       } else {

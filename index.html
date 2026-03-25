@@ -776,8 +776,8 @@ async function createRoom() {
 
   const code = genCode();
   ME.host=true; ME.room=code; ME.role='hire_manager'; ME.name='Hire Manager';
-  localStorage.setItem('yrh_room', code);
-  localStorage.setItem('yrh_host', '1');
+  localStorage.setItem('yrh_room_'+ME.id, code);
+  localStorage.setItem('yrh_host_'+ME.id, '1');
 
   await db.ref(`rooms/${code}`).set({
     empId:randEmpId, taskId:randTask.id,
@@ -815,8 +815,8 @@ async function joinRoom() {
     ME.name = existing_player.name || name;
     ME.room = code; ME.host = false; ME.cnum = existing_player.cnum;
     ME.role = existing_player.role;
-    localStorage.setItem('yrh_room', code);
-    localStorage.setItem('yrh_host', '0');
+    localStorage.setItem('yrh_room_'+ME.id, code);
+    localStorage.setItem('yrh_host_'+ME.id, '0');
     err.classList.remove('on');
     sub(code);
     return;
@@ -844,8 +844,8 @@ async function joinRoom() {
 
   // Write the player entry with the atomically-assigned cnum
   ME.name=name; ME.room=code; ME.host=false; ME.cnum=assignedCnum;
-  localStorage.setItem('yrh_room', code);
-  localStorage.setItem('yrh_host', '0');
+  localStorage.setItem('yrh_room_'+ME.id, code);
+  localStorage.setItem('yrh_host_'+ME.id, '0');
   err.classList.remove('on');
   await db.ref(`rooms/${code}/players/${ME.id}`).set({name, role:'pending', cnum:assignedCnum, ready:false});
   sub(code);
@@ -1616,7 +1616,7 @@ function clearTick(){if(timerLoop){clearInterval(timerLoop);timerLoop=null;}}
 function go(id){
   document.querySelectorAll('.scr').forEach(s=>s.classList.remove('on'));
   document.getElementById(id)?.classList.add('on');
-  if(id==='s-home'){ localStorage.removeItem('yrh_room'); localStorage.removeItem('yrh_host'); }
+  if(id==='s-home'){ localStorage.removeItem('yrh_room_'+ME.id); localStorage.removeItem('yrh_host_'+ME.id); }
 }
 function pwait(big,sub){document.getElementById('pw-m').textContent=sub.toUpperCase();document.getElementById('pw-big').textContent=big;document.getElementById('pw-sub').textContent=sub;go('s-pwait');}
 
@@ -1637,15 +1637,17 @@ window.addEventListener('load',()=>{
     try{
       bootFirebase();
       // Try to auto-reconnect if this device was in a game
-      const savedRoom = localStorage.getItem('yrh_room');
-      const savedHost = localStorage.getItem('yrh_host') === '1';
+      const savedRoom = localStorage.getItem('yrh_room_'+ME.id);
+      const savedHost = localStorage.getItem('yrh_host_'+ME.id) === '1';
       if(savedRoom){
         db.ref(`rooms/${savedRoom}`).get().then(snap=>{
-          if(!snap.exists()){ localStorage.removeItem('yrh_room'); localStorage.removeItem('yrh_host'); go('s-home'); showConsentBanner(); return; }
+          if(!snap.exists()){ localStorage.removeItem('yrh_room_'+ME.id); localStorage.removeItem('yrh_host_'+ME.id); go('s-home'); showConsentBanner(); return; }
           const r = snap.val();
           // Only reconnect if game is still active (not done)
-          const dead = ['meatwork_done'];
-          if(dead.includes(r.status)){ localStorage.removeItem('yrh_room'); localStorage.removeItem('yrh_host'); go('s-home'); showConsentBanner(); return; }
+          const dead = ['meatwork_done', 'final'];
+          if(dead.includes(r.status)){ localStorage.removeItem('yrh_room_'+ME.id); localStorage.removeItem('yrh_host_'+ME.id); go('s-home'); showConsentBanner(); return; }
+          // Also bail if this player is no longer in the room
+          if(!r.players?.[ME.id]){ localStorage.removeItem('yrh_room_'+ME.id); localStorage.removeItem('yrh_host_'+ME.id); go('s-home'); showConsentBanner(); return; }
           const me = r.players?.[ME.id];
           if(!me){ go('s-home'); showConsentBanner(); return; }
           // Restore state

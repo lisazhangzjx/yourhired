@@ -749,7 +749,7 @@ const ME = {
 
 let G = { np:3, nr:5, empId:null, taskId:null };
 let room = null, roomRef = null, timerLoop = null;
-let LOCAL_API_KEY = ''; // cached from room creation or join, survives Firebase reads
+let LOCAL_API_KEY = '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'; // hardcoded fallback — replace with your sk-ant-... key
 let voiceRec = null, recording = false, transcript = '';
 let mwVoiceRec = null, mwRecording = false;
 let judgePick = null;
@@ -1511,12 +1511,17 @@ async function evaluateMeatwork(r, report){
   const prompt=`WORKER PROFILE:\nName: ${r.meatwork?.winnerName||'Unknown'}\nHired for: ${r.taskTitle} at ${r.empName}\n\nFIELD CONTEXT: This worker was hired through a competitive interview. Evaluate with the full weight of an employer.\n\nTASK ASSIGNED: ${r.taskIrl}${mediaNote}\n\nFIELD REPORT:\n${report}\n\n---\nINSTRUCTION: Reference at least one specific detail from the field report or submitted photos. Do not write generically.`;
 
   const key = LOCAL_API_KEY || r._ak;
-  console.log('Eval key prefix:', key?.slice(0,20), 'valid:', key?.startsWith('sk-'));
   let evalText='', uv=null, ev=null, verdict=null;
+  // Diagnostic — shows on eval screen so you can see key status without DevTools
+  const keyStatus = key ? (key.startsWith('sk-') ? 'KEY OK' : 'KEY GARBLED: '+key.slice(0,18)) : 'NO KEY FOUND';
+  console.log('Eval key status:', keyStatus, key?.slice(0,20));
+  if(!key || !key.startsWith('sk-')){
+    evalText = 'Evaluation failed — '+keyStatus+'. Create a new room and paste your API key again.';
+    await db.ref(`rooms/${ME.room}/meatwork`).update({evaluation:{text:evalText,uv:null,ev:null,verdict:null}});
+    await db.ref(`rooms/${ME.room}/status`).set('meatwork_done');
+    return;
+  }
   try{
-    console.log('Running eval on HM device, key prefix:', key?.slice(0,20));
-    if(!key) throw new Error('No API key available on this device');
-
     const userContent=[];
     mwMediaB64.slice(0,3).forEach(m=>{
       const match=m.data?.match(/^data:(image\/[a-z+]+);base64,(.+)$/);

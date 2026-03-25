@@ -572,7 +572,8 @@ body{font-family:'Courier Prime',monospace;background:var(--bg);color:var(--ink)
       </div>
 
       <button class="btn-r" id="mw-submit-btn" onclick="submitMeatwork()" disabled>SUBMIT FIELD REPORT →</button>
-      <p style="font-size:10px;color:var(--muted);text-align:center;margin-top:8px;line-height:1.6;font-style:italic">At least one photo required. Your AI employer will read your report and evidence and deliver their verdict.</p>
+      <p id="mw-submit-status" style="font-size:11px;color:var(--muted);text-align:center;margin-top:8px;line-height:1.8;min-height:18px"></p>
+      <p style="font-size:10px;color:var(--muted);text-align:center;margin-top:4px;line-height:1.6;font-style:italic">At least one photo required. Your AI employer will read your report and evidence and deliver their verdict.</p>
     </div>
   </div>
 </div>
@@ -785,7 +786,7 @@ async function createRoom() {
     taskType:randTask.type, taskPay:randTask.pay,
     empName:emp.name, empDivision:emp.division, empLogo:emp.logo, empAccent:emp.accent,
     numPlayers:G.np, numRounds:3, currentRound:0,
-    status:'lobby', hostId:ME.id, aiPlayerId:null, apiKey,
+    status:'lobby', hostId:ME.id, aiPlayerId:null, apiKey:btoa(apiKey),
     joinCounter:0,
     scores:{ai:0,human:0},
     picks:{},
@@ -863,7 +864,7 @@ function sub(code) {
     const me=room.players?.[ME.id];
     if(me?.role&&me.role!=='pending') ME.role=me.role;
     if(me?.cnum) ME.cnum=me.cnum;
-    if(room.apiKey && !LOCAL_API_KEY) LOCAL_API_KEY=room.apiKey; // cache key locally
+    if(room.apiKey && !LOCAL_API_KEY) LOCAL_API_KEY=atob(room.apiKey); // cache key locally
     if(room.empAccent) document.documentElement.style.setProperty('--acc', room.empAccent);
     dispatch(room);
   });
@@ -1406,7 +1407,7 @@ function renderMeatworkPhase(r){
   const winnerName=r.meatwork?.winnerName||'Candidate';
 
   if(ME.id===winnerId){
-    // Hired — go straight to field assignment, no opt-in
+    // Hired — go straight to field
     document.getElementById('mw-logo').textContent=emp.logo;
     document.getElementById('mw-emp-name').textContent=emp.name;
     document.getElementById('mw-emp-div').textContent=emp.division;
@@ -1415,12 +1416,11 @@ function renderMeatworkPhase(r){
     document.getElementById('mw-task-irl').textContent=r.taskIrl;
     mwMediaFiles=[]; mwMediaB64=[];
     renderMwGrid(); updateMwSubmit();
-    // Init mw voice
     mwVoiceRec=null; mwRecording=false;
     setupMwVoice();
     go('s-meatwork');
   } else {
-    if(ME.host) return; // HM stays on final screen
+    if(ME.host) return; // HM — job done after sending to field, stays on final screen
     // Non-hired — game over screen
     document.getElementById('mw-watch-name').textContent=winnerName.toUpperCase();
     document.getElementById('mw-watch-msg').textContent=`${r.taskTitle} · ${r.empName}`;
@@ -1471,46 +1471,33 @@ async function submitMeatwork(){
   const btn=document.getElementById('mw-submit-btn');
   btn.disabled=true; btn.textContent='SUBMITTING...';
 
-  // Guard — if room ref lost (e.g. long session), use cached room data
   if(!ME.room){
     btn.disabled=false; btn.textContent='SUBMIT FIELD REPORT →';
     alert('Session error — please rejoin the room and try again.');
     return;
   }
 
-  // Step 1: get room data with a 10s timeout
-  let r;
-  try{
-    const timeout = new Promise((_,reject)=>setTimeout(()=>reject(new Error('timeout')),10000));
-    const snap = await Promise.race([db.ref(`rooms/${ME.room}`).get(), timeout]);
-    r = snap.val();
-  }catch(e){
-    // Fall back to cached room object if Firebase read times out
-    r = room;
-    console.warn('Firebase read timed out, using cached room:', e.message);
-  }
-
-  if(!r){ btn.disabled=false; btn.textContent='SUBMIT FIELD REPORT →'; alert('Could not reach the server. Check your connection and try again.'); return; }
-
-  // Step 2: save report text
+  // Save report text
   try{
     await db.ref(`rooms/${ME.room}/meatwork`).update({
       report, submittedAt:new Date().toISOString(), submittedBy:ME.id
     });
-  }catch(e){ console.warn('Report text save failed:', e.message); }
+  }catch(e){ console.warn('Report save failed:', e.message); }
 
-  // Step 3: try to save photos (non-blocking)
+  // Save photos capped at 2
   try{
     await db.ref(`rooms/${ME.room}/meatwork/media`).set(mwMediaB64.slice(0,2));
   }catch(e){ console.warn('Photo save failed:', e.message); }
 
-  // Step 4: run evaluation — always runs, always transitions screen
+  // Run evaluation — key comes from LOCAL_API_KEY (decoded from Firebase in sub())
   try{
+    const snap = await db.ref(`rooms/${ME.room}`).get();
+    const r = snap.val() || room;
     await evaluateMeatwork(r, report);
   }catch(e){
     console.error('Eval failed:', e);
     await db.ref(`rooms/${ME.room}/meatwork`).update({
-      evaluation:{text:'Your report has been saved. Evaluation could not be completed — '+e.message, uv:null, ev:null, verdict:null}
+      evaluation:{text:'Evaluation could not be completed — '+e.message, uv:null, ev:null, verdict:null}
     }).catch(()=>{});
     await db.ref(`rooms/${ME.room}/status`).set('meatwork_done').catch(()=>{});
   }
@@ -1519,54 +1506,32 @@ async function submitMeatwork(){
 async function evaluateMeatwork(r, report){
   const emp=EMPLOYERS[r.empId]||EMPLOYERS.panoptikon;
   const mediaNote=mwMediaB64.length
-    ? `\nFIELD EVIDENCE: ${mwMediaB64.length} photo(s) submitted — described below.`
+    ? `\nFIELD EVIDENCE: ${mwMediaB64.length} photo(s) submitted.`
     : '\nFIELD EVIDENCE: None submitted.';
-  const prompt=`WORKER PROFILE:\nName: ${r.meatwork?.winnerName||'Unknown'}\nHired for: ${r.taskTitle} at ${r.empName}\n\nFIELD CONTEXT: This worker was hired through a competitive interview. Evaluate with the full weight of an employer.\n\nTASK ASSIGNED: ${r.taskIrl}${mediaNote}\n\nFIELD REPORT:\n${report}\n\n---\nINSTRUCTION: Reference at least one specific detail from the field report or the submitted photos. Do not write generically.`;
+  const prompt=`WORKER PROFILE:\nName: ${r.meatwork?.winnerName||'Unknown'}\nHired for: ${r.taskTitle} at ${r.empName}\n\nFIELD CONTEXT: This worker was hired through a competitive interview. Evaluate with the full weight of an employer.\n\nTASK ASSIGNED: ${r.taskIrl}${mediaNote}\n\nFIELD REPORT:\n${report}\n\n---\nINSTRUCTION: Reference at least one specific detail from the field report or submitted photos. Do not write generically.`;
 
+  const key = LOCAL_API_KEY || r.apiKey;
   let evalText='', uv=null, ev=null, verdict=null;
   try{
-    const key = r.apiKey||LOCAL_API_KEY;
-    console.log('Calling eval, key prefix:', key?.slice(0,20));
+    console.log('Running eval on HM device, key prefix:', key?.slice(0,20));
+    if(!key) throw new Error('No API key available on this device');
 
-    // Build content array — text prompt + images if any
-    const userContent = [];
-
-    // Add images first (up to 3 to keep tokens reasonable)
-    const photos = mwMediaB64.slice(0,3);
-    photos.forEach(m=>{
-      // Extract base64 data and media type from data URL
-      const match = m.data?.match(/^data:(image\/[a-z+]+);base64,(.+)$/);
-      if(match){
-        userContent.push({
-          type:'image',
-          source:{ type:'base64', media_type:match[1], data:match[2] }
-        });
-      }
+    const userContent=[];
+    mwMediaB64.slice(0,3).forEach(m=>{
+      const match=m.data?.match(/^data:(image\/[a-z+]+);base64,(.+)$/);
+      if(match) userContent.push({type:'image',source:{type:'base64',media_type:match[1],data:match[2]}});
     });
+    userContent.push({type:'text',text:prompt});
 
-    // Add text prompt
-    userContent.push({ type:'text', text:prompt });
-
-    const res = await fetch('https://api.anthropic.com/v1/messages',{
+    const res=await fetch('https://api.anthropic.com/v1/messages',{
       method:'POST',
-      headers:{
-        'Content-Type':'application/json',
-        'x-api-key':key,
-        'anthropic-version':'2023-06-01',
-        'anthropic-dangerous-direct-browser-access':'true'
-      },
-      body:JSON.stringify({
-        model:'claude-sonnet-4-20250514',
-        max_tokens:1000,
-        system:emp.persona,
-        messages:[{ role:'user', content:userContent }]
-      })
+      headers:{'Content-Type':'application/json','x-api-key':key,'anthropic-version':'2023-06-01','anthropic-dangerous-direct-browser-access':'true'},
+      body:JSON.stringify({model:'claude-sonnet-4-20250514',max_tokens:1000,system:emp.persona,messages:[{role:'user',content:userContent}]})
     });
-    const d = await res.json();
-    if(d.error){ console.error('API error:', d.error); throw new Error(d.error.message); }
-    const text = d.content?.[0]?.text||'';
-    console.log('Eval response start:', text?.slice(0,80));
-    if(!text) throw new Error('Empty response from API');
+    const d=await res.json();
+    if(d.error) throw new Error(d.error.message);
+    const text=d.content?.[0]?.text||'';
+    if(!text) throw new Error('Empty response');
     evalText=text.replace(/USE-VALUE:[\s\S]*$/m,'').replace(/EXCHANGE-VALUE:[\s\S]*$/m,'').replace(/VERDICT:[\s\S]*$/m,'').trim();
     uv=text.match(/USE-VALUE:\s*(\d+)/i)?.[1]||null;
     ev=text.match(/EXCHANGE-VALUE:\s*(\d+)/i)?.[1]||null;
@@ -1574,7 +1539,7 @@ async function evaluateMeatwork(r, report){
     if(!evalText) evalText='Report received and filed.';
   }catch(e){
     console.error('Eval error:', e.message);
-    evalText='Your report has been saved. Evaluation could not be completed — '+e.message;
+    evalText='Evaluation could not be completed — '+e.message;
   }
   await db.ref(`rooms/${ME.room}/meatwork`).update({evaluation:{text:evalText,uv,ev,verdict}});
   await db.ref(`rooms/${ME.room}/status`).set('meatwork_done');

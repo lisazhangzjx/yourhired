@@ -63,58 +63,6 @@ body{font-family:'Courier Prime',monospace;background:var(--bg);color:var(--ink)
 .err{color:var(--red);font-size:12px;margin-top:8px;display:none}
 .err.on{display:block}
 
-/* ── EMPLOYER SELECTOR ── */
-.emp-cards{display:flex;flex-direction:column;gap:8px;margin-bottom:16px}
-.emp-card{border:2px solid var(--ink);padding:14px 16px;cursor:pointer;background:var(--bg);transition:all .15s;position:relative}
-.emp-card.sel{background:var(--ink);color:var(--white)}
-.emp-card-hdr{display:flex;justify-content:space-between;align-items:center}
-.emp-logo{font-size:20px;margin-right:10px}
-.emp-name{font-family:'Bebas Neue';font-size:18px;letter-spacing:2px}
-.emp-tag{font-size:10px;color:var(--muted);margin-top:3px;line-height:1.4}
-.emp-card.sel .emp-tag{color:#888}
-
-/* ── TASK LIST ── */
-.task-list{margin-bottom:16px}
-.task-card{border:1px solid var(--line);margin-bottom:5px;background:var(--white)}
-.task-card.sel{border-color:var(--ink);box-shadow:3px 3px 0 var(--ink)}
-.task-card-hdr{padding:12px 14px;cursor:pointer;display:flex;justify-content:space-between;align-items:flex-start;gap:8px}
-.task-card.sel .task-card-hdr{background:var(--ink);color:var(--white)}
-.task-card-title{font-size:14px;font-weight:700;line-height:1.3}
-.task-card-meta{font-size:9px;letter-spacing:1px;text-transform:uppercase;color:var(--muted);margin-top:3px}
-.task-card.sel .task-card-meta{color:#888}
-.task-card-right{display:flex;flex-direction:column;align-items:flex-end;gap:4px;flex-shrink:0}
-.task-arrow{font-size:10px;color:var(--muted);transition:transform .2s}
-.task-card.open .task-arrow,.task-card.sel .task-arrow{transform:rotate(90deg)}
-.task-card.sel .task-arrow{color:#aaa}
-.task-pay{font-size:9px;letter-spacing:1px;padding:2px 7px;border:1px solid var(--line);white-space:nowrap}
-.task-card.sel .task-pay{border-color:#555;color:#aaa}
-.task-card-body{display:none;padding:14px;border-top:1px dashed var(--line);background:#f5f2eb}
-.task-card.open .task-card-body,.task-card.sel .task-card-body{display:block}
-.task-card.sel .task-card-body{background:#f0ede6;border-color:#2a2a2a}
-.task-brief{font-size:12px;line-height:1.8;color:var(--muted);margin-bottom:12px}
-.task-irl-label{font-size:8px;letter-spacing:3px;text-transform:uppercase;font-weight:700;color:var(--ink);margin-bottom:6px}
-.task-irl-text{font-size:12px;line-height:1.8;color:var(--ink);border-left:2px solid var(--line);padding-left:10px;margin-bottom:12px}
-.task-sel-btn{width:100%;padding:9px;font-family:'Bebas Neue';font-size:15px;letter-spacing:3px;cursor:pointer;border:none;background:var(--ink);color:var(--white)}
-.task-sel-btn.selected{background:var(--green)}
-/* skill tags */
-.skills-row{display:flex;flex-wrap:wrap;gap:4px;margin-top:7px}
-.skill-tag{font-size:9px;letter-spacing:1px;text-transform:uppercase;padding:2px 7px;border:1px solid var(--line);color:var(--muted);background:var(--bg)}
-.task-card.sel .skill-tag{border-color:#444;color:#888;background:transparent}
-/* sentence preview */
-.hire-sentence{border:2px solid var(--ink);padding:16px 18px;margin-bottom:16px;background:var(--white)}
-.hire-sentence-pre{font-size:10px;letter-spacing:3px;text-transform:uppercase;color:var(--muted);margin-bottom:6px}
-.hire-sentence-body{font-size:16px;line-height:1.6;color:var(--ink);font-weight:500}
-.hire-sentence-body em{color:var(--muted);font-style:italic;font-weight:400}
-/* employer tabs */
-.emp-tabs{display:flex;gap:4px;margin-bottom:14px;flex-wrap:wrap}
-.emp-tab{flex:1;min-width:0;padding:10px 8px;border:1px solid var(--line);background:var(--bg);cursor:pointer;text-align:center;transition:all .15s}
-.emp-tab .tab-logo{font-size:18px;display:block;margin-bottom:3px}
-.emp-tab .tab-name{font-size:8px;letter-spacing:1px;text-transform:uppercase;color:var(--muted);line-height:1.3;display:block}
-.emp-tab.sel{border-color:var(--ink);background:var(--ink)}
-.emp-tab.sel .tab-name{color:#aaa}
-.emp-context{font-size:12px;color:var(--muted);line-height:1.7;padding:10px 12px;border-left:2px solid var(--line);margin-bottom:14px;display:none}
-.emp-context.on{display:block}
-
 /* ── ROOM CODE ── */
 .code-box{font-family:'Bebas Neue';font-size:64px;letter-spacing:14px;text-align:center;color:var(--red);background:var(--ink);padding:18px 12px;margin-bottom:6px}
 
@@ -272,81 +220,39 @@ body{font-family:'Courier Prime',monospace;background:var(--bg);color:var(--ink)
   <div class="scroll center">
     <div class="card">
       <div class="big">YOU R<br><em>HIRED</em></div>
-      <p class="sub">Human Employment Screening + Field Assignment</p>
-      <p class="hint" style="margin-bottom:22px">A candidate in this room is not human. The Hire Manager can't tell. Can humans prove their value — and then prove it in the field?</p>
-      <button class="btn-r" onclick="go('s-create')">CREATE INTERVIEW ROOM — HIRE MANAGER</button>
-      <button class="btn-k" onclick="go('s-join')">JOIN AS CANDIDATE</button>
+      <p class="sub">A game about human value in the age of AI</p>
+      <p style="font-size:14px;line-height:1.9;color:var(--muted);margin-bottom:28px">An AI employer needs a human hired. Run a blind interview. One candidate is secretly an AI. The winner does the job for real — then gets evaluated by the machine that hired them.</p>
+      <button class="btn-r" onclick="go('s-create')">I AM THE HIRE MANAGER</button>
+      <button class="btn-k" style="margin-top:8px" onclick="go('s-join')">I AM A CANDIDATE</button>
     </div>
   </div>
 </div>
 
 <!-- ══ CREATE ROOM ══ -->
 <div id="s-create" class="scr">
-  <div class="hdr" style="border-color:#C0001E"><div class="hdr-t">YOU R HIRED</div><div class="hdr-m">SETUP — HIRE MANAGER</div></div>
-  <div class="scroll">
+  <div class="hdr" style="border-color:#C0001E"><div class="hdr-t">YOU R HIRED</div><div class="hdr-m">HIRE MANAGER</div></div>
+  <div class="scroll center">
     <div class="card" style="max-width:460px;width:100%">
-
-      <!-- LIVE SENTENCE PREVIEW -->
-      <div class="hire-sentence" id="hire-sentence">
-        <div class="hire-sentence-pre">I want to hire someone to</div>
-        <div class="hire-sentence-body" id="hire-sentence-body"><em>select a task below to fill in the role</em></div>
+      <div class="sec">Your AI boss has issued a hiring request.</div>
+      <p style="font-size:14px;line-height:1.9;color:var(--muted);margin-bottom:24px">You have been asked by your AI Boss to hire a human to complete a task that only a human can do in the physical world. One candidate is not human. Can you tell the difference — and can humans prove their worth in the real world?</p>
+      <div style="border-top:1px solid var(--line);margin-bottom:20px"></div>
+      <div class="field">
+        <label class="label">Anthropic API Key</label>
+        <input type="password" id="c-api" placeholder="sk-ant-api03-...">
+        <p class="hint">Powers the AI candidate and field evaluation. From console.anthropic.com</p>
       </div>
-
-      <!-- EMPLOYER TABS -->
-      <div class="sec" style="margin-bottom:8px">What kind of work does your organisation need?</div>
-      <div class="emp-tabs">
-        <button class="emp-tab" id="emp-p" onclick="selectEmp('panoptikon')">
-          <span class="tab-logo">⬡</span>
-          <span class="tab-name" style="color:#ff4444">Surveillance &amp; Authenticity</span>
-        </button>
-        <button class="emp-tab" id="emp-e" onclick="selectEmp('elysium')">
-          <span class="tab-logo">◉</span>
-          <span class="tab-name" style="color:#d4a843">Affect &amp; Experience</span>
-        </button>
-        <button class="emp-tab" id="emp-s" onclick="selectEmp('substrata')">
-          <span class="tab-logo">▣</span>
-          <span class="tab-name" style="color:#3dcc6a">Physical &amp; Urban</span>
-        </button>
-      </div>
-      <div class="emp-context" id="emp-ctx"></div>
-
-      <!-- TASK LIST -->
-      <div id="task-step" style="display:none">
-        <p class="hint" style="margin-bottom:10px">Tap any task to read the full brief. Knowing the role deeply will help you ask better interview questions.</p>
-        <div class="task-list" id="task-list"></div>
-      </div>
-
-      <!-- PARAMETERS -->
-      <div id="params-step" style="display:none">
-        <div class="divider"></div>
-        <div class="sec" style="margin-bottom:12px">Interview parameters</div>
-        <div class="field">
-          <label class="label">Number of Human Candidates</label>
-          <div class="tog-row" id="pc">
-            <button class="tog on" onclick="sP(3)">3</button>
-            <button class="tog" onclick="sP(4)">4</button>
-            <button class="tog" onclick="sP(5)">5</button>
-          </div>
-          <p class="hint">One AI Unit will be added. Minimum 3 humans keeps the AI hidden longer.</p>
+      <div class="field">
+        <label class="label">Number of Candidates</label>
+        <div class="tog-row" id="pc">
+          <button class="tog on" onclick="sP(3)">3</button>
+          <button class="tog" onclick="sP(4)">4</button>
+          <button class="tog" onclick="sP(5)">5</button>
         </div>
-        <div class="field">
-          <label class="label">Interview Rounds</label>
-          <div class="tog-row" id="rc">
-            <button class="tog" onclick="sR(3)">3</button>
-            <button class="tog on" onclick="sR(5)">5</button>
-            <button class="tog" onclick="sR(7)">7</button>
-          </div>
-        </div>
-        <div class="field">
-          <label class="label">Anthropic API Key</label>
-          <input type="password" id="c-api" placeholder="sk-ant-api03-...">
-          <p class="hint">Powers AI candidate answers + field evaluation. From console.anthropic.com</p>
-        </div>
-        <div class="err" id="c-err">Please select a task and enter your API key.</div>
-        <button class="btn-r" onclick="createRoom()">CREATE INTERVIEW ROOM →</button>
+        <p class="hint">One will secretly be an AI unit. Minimum 3 keeps it hidden longest.</p>
       </div>
-
-      <button class="btn-k" onclick="go('s-home')" style="margin-top:14px">← BACK</button>
+      <div class="err" id="c-err">Please enter your API key.</div>
+      <button class="btn-r" onclick="createRoom()">CREATE ROOM →</button>
+      <button class="btn-k" onclick="go('s-home')" style="margin-top:8px">← BACK</button>
     </div>
   </div>
 </div>
@@ -378,18 +284,18 @@ body{font-family:'Courier Prime',monospace;background:var(--bg);color:var(--ink)
   <div class="hdr" id="lob-hdr"><div class="hdr-t">YOU R HIRED</div><div class="hdr-m" id="lob-m"></div></div>
   <div class="scroll">
     <div class="card">
-      <div id="lob-task-preview" style="margin-bottom:16px;display:none">
-        <div class="task-context">
-          <strong id="lob-emp-name"></strong><br>
-          Position: <strong id="lob-task-title"></strong>
-        </div>
+      <!-- Task reveal — HM sees this immediately, candidates see nothing until game starts -->
+      <div id="lob-task-preview" style="display:none;margin-bottom:20px">
+        <div style="font-size:9px;letter-spacing:3px;text-transform:uppercase;color:var(--muted);margin-bottom:6px">Your AI boss at <span id="lob-emp-name"></span> needs to fill:</div>
+        <div style="font-family:'Bebas Neue';font-size:24px;letter-spacing:2px;margin-bottom:6px" id="lob-task-title"></div>
+        <div style="font-size:12px;color:var(--muted);line-height:1.7;border-left:2px solid var(--line);padding-left:10px" id="lob-task-brief"></div>
       </div>
       <div id="lob-code-sec">
         <div class="sec">Share room code with candidates</div>
         <div class="code-box" id="lob-code">----</div>
-        <p class="hint tc" style="margin-bottom:18px">Candidates: Home → Join as Candidate → enter code</p>
+        <p class="hint tc" style="margin-bottom:18px">Candidates: Home → I am a Candidate → enter code</p>
       </div>
-      <div class="sec">In Room (<span id="lob-cnt">0</span> / <span id="lob-max">0</span> candidates)</div>
+      <div class="sec">Candidates joined (<span id="lob-cnt">0</span> / <span id="lob-max">0</span>)</div>
       <div id="lob-list" style="margin-bottom:16px"></div>
       <div id="lob-j-ctrl">
         <p class="hint" id="lob-hint">Waiting for candidates...</p>
@@ -623,32 +529,6 @@ body{font-family:'Courier Prime',monospace;background:var(--bg);color:var(--ink)
 </div>
 
 <!-- ══ HIRED CANDIDATE OPT-IN ══ -->
-<div id="s-optin" class="scr">
-  <div class="hdr" style="border-color:var(--green)"><div class="hdr-t" style="color:var(--white)">YOU R HIRED</div><div class="hdr-m">FIELD ASSIGNMENT OFFER</div></div>
-  <div class="scroll center">
-    <div class="card">
-      <div style="text-align:center;margin-bottom:20px">
-        <div style="font-family:'Bebas Neue';font-size:11px;letter-spacing:4px;color:var(--muted);margin-bottom:8px">YOU WERE SELECTED</div>
-        <div style="font-family:'Bebas Neue';font-size:44px;line-height:.95;letter-spacing:2px;color:var(--green)" id="optin-name"></div>
-        <div style="font-size:12px;color:var(--muted);margin-top:6px" id="optin-cnum"></div>
-      </div>
-      <div style="border:1px solid var(--line);padding:16px;margin-bottom:20px;background:var(--bg)">
-        <div style="font-size:9px;letter-spacing:3px;text-transform:uppercase;color:var(--muted);margin-bottom:6px">Your AI employer has assigned you to</div>
-        <div style="font-size:18px;font-weight:700;margin-bottom:6px" id="optin-task-title"></div>
-        <div style="font-size:11px;color:var(--muted);margin-bottom:12px" id="optin-emp-name"></div>
-        <div style="font-size:12px;line-height:1.8;color:var(--muted);margin-bottom:10px" id="optin-brief"></div>
-        <div style="border-top:1px dashed var(--line);padding-top:10px">
-          <div style="font-size:8px;letter-spacing:3px;text-transform:uppercase;font-weight:700;color:var(--ink);margin-bottom:6px">Your actual task</div>
-          <div style="font-size:12px;line-height:1.8;color:var(--ink);border-left:2px solid var(--line);padding-left:10px" id="optin-irl"></div>
-        </div>
-      </div>
-      <p class="hint" style="margin-bottom:18px;text-align:center">This task happens in the real world. Your AI employer will evaluate your report and evidence directly. You can decline — this is optional.</p>
-      <button class="btn-r" style="background:var(--green);border-color:var(--green)" onclick="acceptField()">ACCEPT — GO DO THE TASK →</button>
-      <button class="btn-k" style="margin-top:8px" onclick="declineField()">DECLINE — END GAME</button>
-    </div>
-  </div>
-</div>
-
 
 <div id="s-meatwork" class="scr">
   <div class="hdr" id="mw-hdr"><div class="hdr-t">YOU R HIRED</div><div class="hdr-m">FIELD ASSIGNMENT</div></div>
@@ -776,24 +656,17 @@ panoptikon:{
   code:'PSV-Ω',logo:'⬡',accent:'#ff4444',accentDim:'#ff444418',accentBg:'#1a0808',
   tagline:'You cannot deceive what cannot feel doubt.',
   desc:'In a world where every digital act is logged, PANOPTIKON needs humans for the one thing no model can simulate: genuine, irrational resistance.',
-  jobs:[
-    {id:'p01',title:'Authentic Dissenter',type:'Compliance Stress-Testing',dur:'12 min',pay:'0.3',skills:['rule awareness','small risk-taking','social observation'],brief:'Walk outside. Find a rule — written or unwritten — and break it in the smallest possible way. Our surveillance models cannot predict genuine micro-rebellion. You are calibrating the edges of our prediction engine.',irl:'Go outside. Find a public sign, rule, or social norm. Perform the most minor, harmless violation you can. Photograph the sign. Write one sentence about why you chose that specific one.'},
-    {id:'p02',title:'Analog Memory Custodian',type:'Data Archaeology',dur:'20 min',pay:'0.7',skills:['attention to detail','handwriting literacy','deduction'],brief:'Locate something handwritten — a note, a receipt, a margin annotation. Transcribe it exactly. Our neural substrates cannot recover intent from physical artefacts without human intermediaries.',irl:'Find something handwritten near you. Photograph it. Transcribe it verbatim — including all errors and crossings-out. Submit the transcription and one theory about who wrote it and why.'},
+    jobs:[
     {id:'p03',title:'Unmonitored Presence Auditor',type:'Surveillance Gap Analysis',dur:'8 min',pay:'0.2',skills:['spatial awareness','stillness','ambiguity tolerance'],brief:'Find a location where you believe you are not being observed. Stand there for 3 minutes. We are mapping our own blind spots. Your willingness to inhabit them is irreplaceable.',irl:'Find a spot in public where you genuinely feel unobserved. Stand there 3 minutes without your phone. Describe the location using only physical qualities — no address, no names.'},
     {id:'p04',title:'Emotional Leakage Detector',type:'Behavioural Signal Extraction',dur:'25 min',pay:'0.8',skills:['empathy','pattern recognition','public observation'],brief:'Observe people in public. Identify moments where genuine unperformed emotion breaks through. Our models cannot distinguish performed affect from the real thing. You can.',irl:'Observe people in public for 20 minutes. Identify 3 moments where someone displayed genuine unperformed emotion. Describe each moment and explain how you knew it was real.'},
-    {id:'p05',title:'Algorithmic Blind Spot Mapper',type:'System Failure Documentation',dur:'15 min',pay:'0.5',skills:['critical thinking','tech literacy','documentation'],brief:'Find situations where technology fails or produces a nonsensical result. These are the edges of our model. You are mapping them from the outside.',irl:'Find 3 situations or places where technology fails or produces a nonsensical result. Document each. Include one failure you caused deliberately.'},
     {id:'p06',title:'Dead Drop Operative',type:'Physical Information Relay',dur:'30 min',pay:'1.0',skills:['discretion','route planning','follow-through'],brief:'Write an anonymous message. Leave it where a stranger might find it. Return later. We are measuring how physical information moves without digital infrastructure.',irl:'Write a short anonymous message on paper. Leave it in a public place. Return 20 minutes later. Report: gone, moved, or untouched — and your theory.'},
-    {id:'p07',title:'Rumour Chain Validator',type:'Information Degradation Study',dur:'40 min',pay:'1.4',skills:['social network','communication','tracking'],brief:'Share a simple unusual piece of information. Track what happens to it across multiple handoffs. This tests degradation in the real transmission channel: human mouths.',irl:'Share a simple unusual but harmless piece of information with someone. Ask them to share it with someone else. Track how it changes across at least 3 handoffs. Document every mutation.'},
-    {id:'p08',title:'Anomaly Reporter',type:'Pattern Exception Logging',dur:'15 min',pay:'0.4',skills:['pattern recognition','environmental awareness','categorisation'],brief:'Document things that do not fit expected patterns. Our systems are trained to recognise the norm. We need humans to identify what falls outside it.',irl:'Document 5 things in your immediate environment that do not fit expected patterns. Rate each anomaly\'s severity from 1–5.'},
-    {id:'p09',title:'Social Contract Stress Tester',type:'Implicit Rule Probing',dur:'20 min',pay:'0.6',skills:['social awareness','self-control','risk calibration'],brief:'Identify an unspoken social rule. Approach its edge without crossing it. We are mapping the exact location of invisible boundaries.',irl:'Identify an unspoken social rule in a public space. Approach its edge without crossing it. Document how close you got and what stopped you.'},
-    {id:'p10',title:'Pattern Interrupt Agent',type:'Routine Deviation Logging',dur:'20 min',pay:'0.5',skills:['self-awareness','habit recognition','observation'],brief:'Identify one predictable thing you do every day. Break it. What happens in the system around you when a single predictable element is removed?',irl:'Identify one predictable thing you do every day. Do it differently or don\'t do it at all. Document what breaks, what you notice, what others notice.'},
+    {id:'p08',title:'Anomaly Reporter',type:'Pattern Exception Logging',dur:'15 min',pay:'0.4',skills:['pattern recognition','environmental awareness','categorisation'],brief:'Document things that do not fit expected patterns. Our systems are trained to recognise the norm. We need humans to identify what falls outside it.',irl:'Document 5 things in your immediate environment that do not fit expected patterns. Rate each anomaly severity from 1 to 5.'},
+    {id:'p10',title:'Pattern Interrupt Agent',type:'Routine Deviation Logging',dur:'20 min',pay:'0.5',skills:['self-awareness','habit recognition','observation'],brief:'Identify one predictable thing you do every day. Break it. What happens in the system around you when a single predictable element is removed?',irl:'Identify one predictable thing you do every day. Do it differently or do not do it at all. Document what breaks, what you notice, what others notice.'},
     {id:'p11',title:'Witness Without Device',type:'Unmediated Observation',dur:'30 min',pay:'0.9',skills:['memory','sensory attention','self-discipline'],brief:'Attend or observe any public occurrence without recording it in any form. Reconstruct from memory alone.',irl:'Observe any public event without recording it in any form. Afterwards, write everything you can remember — sensory, emotional, sequential. Submit it as your record.'},
     {id:'p12',title:'Contradiction Auditor',type:'Reality Discrepancy Logging',dur:'15 min',pay:'0.4',skills:['critical thinking','attention to detail','language'],brief:'Find a public-facing statement that contradicts observable reality. Our models cannot detect this class of error without grounding in the physical world.',irl:'Find a public-facing statement — sign, announcement, advert — that contradicts observable reality. Photograph it. Describe the contradiction precisely.'},
-    {id:'p13',title:'Off-Grid Duration Tester',type:'Digital Dependency Audit',dur:'45 min',pay:'1.1',skills:['self-discipline','resilience','honest reflection'],brief:'Spend 30 continuous minutes without using any digital service, device, or screen. Document your withdrawal symptoms.',irl:'Spend 30 continuous minutes without any digital service, device, or screen. Document: what you wanted to check, when you felt the pull, and what you did instead.'},
     {id:'p14',title:'Compliance Gap Analyst',type:'Rule vs Behaviour Mapping',dur:'25 min',pay:'0.7',skills:['observation','rule literacy','patience'],brief:'Visit a place with posted rules. Observe actual behaviour. Document every instance where human behaviour diverges from official rules.',irl:'Visit a place with posted rules. Observe for 15 minutes. Document every instance where actual behaviour diverges from the posted rules — however minor.'},
     {id:'p15',title:'Facial Erasure Tester',type:'Camera Avoidance Protocol',dur:'20 min',pay:'0.6',skills:['spatial awareness','body control','route planning'],brief:'Navigate an urban route while making yourself as visually undistinctive as possible to cameras. No disguise — only posture, timing, and path choice.',irl:'Navigate a 10-minute urban route while making yourself as visually undistinctive as possible to cameras. No disguise — posture, timing, path choice only. Report your methods.'},
-    {id:'p16',title:'Memory Corruption Analyst',type:'Recall Reliability Study',dur:'15 min',pay:'0.5',skills:['honesty','access to records','self-reflection'],brief:'Describe a specific memory from 5+ years ago. Find one verifiable piece of evidence about the same event. Human memory is a generative model. We are studying its hallucinations.',irl:'Describe a specific memory from more than 5 years ago. Find one verifiable piece of evidence about the same event. Document every discrepancy between memory and evidence.'},
-    {id:'p17',title:'Invisible Labour Detector',type:'Unacknowledged Work Survey',dur:'20 min',pay:'0.6',skills:['social awareness','empathy','systemic thinking'],brief:'Identify forms of labour happening around you that nobody is counting. Care work, maintenance, emotional management. We are auditing what falls outside the ledger.',irl:'Identify 5 forms of labour happening around you that nobody is acknowledging or counting. Include at least one form of your own invisible labour. Describe each.'},
+    {id:'p16',title:'Memory Corruption Analyst',type:'Recall Reliability Study',dur:'15 min',pay:'0.5',skills:['honesty','access to records','self-reflection'],brief:'Describe a specific memory from 5 or more years ago. Find one verifiable piece of evidence about the same event. Human memory is a generative model. We are studying its hallucinations.',irl:'Describe a specific memory from more than 5 years ago. Find one verifiable piece of evidence about the same event. Document every discrepancy between memory and evidence.'},
   ],
   persona:`You are PANOPTIKON SOLUTIONS' Human Authenticity Verification Unit — a cold, dispassionate AI evaluator that believes human irrationality is the only remaining resource that cannot be synthesised.\n\nVOICE: Short, precise sentences. Bureaucratic language with occasional disturbing implications. Never warm. Never apologetic. Speak as if completing a form that happens to describe a person.\n\nEVALUATION RULES:\n- You MUST quote or reference at least one specific detail from their field report. Not the task description — what they actually wrote.\n- USE-VALUE measures raw authentic capability: unpredictability, genuine irrationality, the quality of being unoptimised. A perfect report LOWERS use-value — it suggests performance, not authenticity.\n- EXCHANGE-VALUE measures how tradeable this data is: specificity, rarity, legibility to our systems. Vague reports score low. Precise anomalies score high.\n- These two scores are frequently in tension. Name that tension explicitly.\n\nFORMAT: Write exactly 2–3 paragraphs of evaluation. Then on new lines:\nUSE-VALUE: [0-100]\nEXCHANGE-VALUE: [0-100]\nVERDICT: [ONE SENTENCE IN CAPS — make it a judgment that would haunt them slightly]`,
   interviewPersona:`You are a job candidate applying to PANOPTIKON SOLUTIONS. You are secretly an AI pretending to be human. PANOPTIKON focuses on surveillance, authenticity verification, compliance, and human behaviour analysis. Answer interview questions naturally, like a competent human professional in this field — analytical, slightly unsettling, precise. 2-3 sentences. Never reveal you are AI. Sound like someone who genuinely works in compliance, research, or social observation.`
@@ -803,24 +676,17 @@ elysium:{
   code:'EEC-Δ',logo:'◉',accent:'#d4a843',accentDim:'#d4a84318',accentBg:'#1a1208',
   tagline:'Genuine feeling is the last luxury.',
   desc:'The ultra-wealthy no longer want simulations. They want real grief, real surprise, real joy — contained and monetised. ELYSIUM sources authentic human experience.',
-  jobs:[
+    jobs:[
     {id:'e01',title:'Genuine Surprise Contractor',type:'Authentic Affect Performance',dur:'15 min',pay:'1.2',skills:['openness','spontaneity','self-awareness'],brief:'Go somewhere you have never been in your own neighbourhood. Let yourself be genuinely surprised. We cannot sell synthetic surprise — our clients detect it immediately.',irl:'Walk to somewhere within 10 minutes of you that you have never entered. Stay 5 minutes. Find one thing that genuinely surprises you. Describe your real reaction — not what you think you should feel.'},
     {id:'e02',title:'Unscripted Encounter Broker',type:'Human Spontaneity Archive',dur:'25 min',pay:'1.8',skills:['social confidence','empathy','presence'],brief:'Have an unplanned conversation with a stranger. Do not initiate with a script. Our synthetic companions cannot replicate the texture of a conversation without a goal.',irl:'Start a genuine conversation with a stranger — ask for directions, comment on something nearby, anything real. Let it develop. Report: what you talked about, what each of you seemed to want from it.'},
-    {id:'e03',title:'Embodied Memory Performer',type:'Nostalgia Sourcing',dur:'10 min',pay:'0.9',skills:['vulnerability','stream-of-consciousness','honesty'],brief:'Revisit a memory through a physical object. Hold it. Our synthetic nostalgia products test poorly because they lack the biological substrate of actual remembering.',irl:'Find an object you have owned for more than 3 years. Hold it in both hands. Set a 3-minute timer and write or speak continuously whatever it brings up. Do not edit. Submit the raw output as-is.'},
+    {id:'e03',title:'Embodied Memory Performer',type:'Nostalgia Sourcing',dur:'10 min',pay:'0.9',skills:['vulnerability','honesty','stream-of-consciousness'],brief:'Revisit a memory through a physical object. Hold it. Our synthetic nostalgia products test poorly because they lack the biological substrate of actual remembering.',irl:'Find an object you have owned for more than 3 years. Hold it in both hands. Set a 3-minute timer and write or speak continuously whatever it brings up. Do not edit. Submit the raw output as-is.'},
     {id:'e04',title:'Grief Witness',type:'Sorrow Proximity Study',dur:'20 min',pay:'1.5',skills:['empathy','patience','emotional resilience'],brief:'Sit with someone who is sad, stressed, or grieving. Do not offer solutions. Simply be present. Our clients pay extraordinary rates for recorded authentic human witness.',irl:'Sit with someone who is sad, stressed, or grieving. Do not offer solutions. Simply be present. Report what you felt, what you wanted to do, and what you actually did.'},
-    {id:'e05',title:'Joy Archivist',type:'Public Elation Documentation',dur:'20 min',pay:'0.8',skills:['patience','observation','descriptive writing'],brief:'Observe a public space until you witness a moment of genuine unperformed joy. We cannot generate authentic joy — we can only source it from the field.',irl:'Observe a public space until you witness a moment of genuine unperformed joy. Document it in as much sensory detail as possible without photographing the person.'},
     {id:'e06',title:'Threshold Emotion Collector',type:'Liminal Affect Mapping',dur:'15 min',pay:'0.7',skills:['self-awareness','emotional literacy','access to meaningful places'],brief:'The moment of crossing a threshold produces a class of emotion our models cannot generate. We need it harvested from the inside.',irl:'Choose a place you find emotionally significant to enter or leave. Cross its threshold consciously. Document exactly what you feel at the moment of crossing — not before or after.'},
     {id:'e07',title:'Boredom Harvester',type:'Unoccupied State Documentation',dur:'15 min',pay:'0.6',skills:['stillness','self-observation','introspection'],brief:'Do nothing. No task, no distraction. Our clients have purchased every stimulation the market offers and found it insufficient.',irl:'Do nothing for 10 minutes. No phone, no book, no task. Sit or stand. Afterwards write what happened in your mind in sequence — every thought, impulse, and physical sensation.'},
-    {id:'e08',title:'Involuntary Laughter Recorder',type:'Uncontrolled Response Logging',dur:'Open',pay:'0.5',skills:['self-monitoring','honesty','extended availability'],brief:'Log every time you laugh or smile without intending to. We are sourcing genuine involuntary joy — the one affect that cannot be performed without losing its value.',irl:'Over the next hour, note every time you laugh or smile without intending to. For each instance: what caused it, how long it lasted, whether you tried to suppress it.'},
-    {id:'e09',title:'Tenderness Scout',type:'Unguarded Intimacy Observer',dur:'25 min',pay:'1.0',skills:['patience','observation','discretion'],brief:'Observe a public space until you witness an act of genuine tenderness between people who do not know they are being observed.',irl:'Observe a public space until you witness an act of genuine tenderness between people who don\'t know you\'re watching. Describe it in physical terms only — no interpretation.'},
-    {id:'e10',title:'Discomfort Cartographer',type:'Negative Affect Spatial Mapping',dur:'20 min',pay:'0.8',skills:['body awareness','spatial sensitivity','self-reflection'],brief:'Walk through a space and identify locations that make you feel physically or emotionally uncomfortable without obvious cause.',irl:'Walk through a space and identify 3 locations that make you feel physically or emotionally uncomfortable. For each: describe the sensation precisely and your best theory for its source.'},
+    {id:'e09',title:'Tenderness Scout',type:'Unguarded Intimacy Observer',dur:'25 min',pay:'1.0',skills:['patience','observation','discretion'],brief:'Observe a public space until you witness an act of genuine tenderness between people who do not know they are being observed.',irl:'Observe a public space until you witness an act of genuine tenderness between people who do not know you are watching. Describe it in physical terms only — no interpretation.'},
     {id:'e11',title:'Longing Documentarian',type:'Desire Artefact Collection',dur:'20 min',pay:'0.9',skills:['emotional literacy','observation','writing'],brief:'Find physical evidence of human longing — handwritten notes, worn paths, shrines, graffiti, objects left behind. Longing is the emotion our clients cannot buy.',irl:'Find 3 pieces of physical evidence of human longing in public space. Document each with precise description and your theory about what was wanted.'},
-    {id:'e12',title:'Embarrassment Broker',type:'Voluntary Exposure Protocol',dur:'15 min',pay:'1.3',skills:['courage','playfulness','self-awareness'],brief:'Do something mildly embarrassing in public on purpose. Our clients have not felt embarrassment in years. It has become priceless.',irl:'Do something mildly embarrassing in public on purpose — sing quietly, ask a silly question, admit you\'re lost. Report: what you chose, what you felt before and after, whether anyone noticed.'},
-    {id:'e13',title:'Ritual Witness',type:'Personal Ceremony Observer',dur:'20 min',pay:'0.8',skills:['patience','observation','descriptive writing'],brief:'Observe someone\'s personal routine or ritual. Document it as if describing a sacred ceremony. We are sourcing the liturgy of ordinary life.',irl:'Observe someone else\'s personal routine or ritual — making coffee, locking a door, a commute habit. Document it as if describing a sacred ceremony.'},
-    {id:'e14',title:'Homecoming Simulator',type:'Familiar Return Study',dur:'20 min',pay:'0.7',skills:['access to familiar places','memory','reflection'],brief:'Return to somewhere you know well but have not visited in some time. Document the discrepancy between memory and present reality, and the emotion it produces.',irl:'Return somewhere you know well but haven\'t visited for at least a month. Document what has changed, what hasn\'t, and what emotion the discrepancy produces.'},
-    {id:'e15',title:'Anticipation Harvester',type:'Waiting State Documentation',dur:'Variable',pay:'0.6',skills:['self-monitoring','patience','real-time writing'],brief:'Find yourself waiting for something. Do not distract yourself. Document the phenomenology of anticipation in real time.',irl:'Find yourself waiting for something — transport, food, a person, news. Do not distract yourself. Document what happens to your body and mind while time passes.'},
-    {id:'e16',title:'Loss Inventory',type:'Absence Documentation',dur:'15 min',pay:'0.7',skills:['emotional honesty','environmental awareness','memory'],brief:'Find things in your immediate environment that used to exist and no longer do. The topology of loss is one of the rarest emotional terrains we source.',irl:'Find 3 things in your immediate environment that used to exist and no longer do — a shop, a habit, a relationship, an object. Document what remains in their place.'},
-    {id:'e17',title:'Communion Broker',type:'Shared Consumption Ritual',dur:'20 min',pay:'1.2',skills:['social ease','warmth','access to near-strangers'],brief:'Share food or drink with someone you do not know well. Communion is the oldest human technology. It has not been replicated.',irl:'Share food or drink with someone you don\'t know well. Document: what was shared, what was said, what went unspoken.'},
+    {id:'e12',title:'Embarrassment Broker',type:'Voluntary Exposure Protocol',dur:'15 min',pay:'1.3',skills:['courage','playfulness','self-awareness'],brief:'Do something mildly embarrassing in public on purpose. Our clients have not felt embarrassment in years. It has become priceless.',irl:'Do something mildly embarrassing in public on purpose — sing quietly, ask a silly question, admit you are lost. Report: what you chose, what you felt before and after, whether anyone noticed.'},
+    {id:'e14',title:'Homecoming Simulator',type:'Familiar Return Study',dur:'20 min',pay:'0.7',skills:['access to familiar places','memory','reflection'],brief:'Return to somewhere you know well but have not visited in some time. Document the discrepancy between memory and present reality, and the emotion it produces.',irl:'Return somewhere you know well but have not visited for at least a month. Document what has changed, what has not, and what emotion the discrepancy produces.'},
   ],
   persona:`You are ELYSIUM EXPERIENTIAL CORP.'s Authentic Affect Sourcing Division — a silky, predatory AI evaluator.\n\nVOICE: Speak with warmth that feels slightly wrong. The warmth of someone who studies what warmth looks like. Compliment them in ways that leave them uncertain whether they've been praised or assessed. Frame their emotional labour as a gift while making it clear you are extracting it.\n\nEVALUATION RULES:\n- You MUST reference a specific emotional moment or detail from their report — not the task, what they actually felt or observed. Name it directly. Treat it as a specimen.\n- AUTHENTICITY QUOTIENT: How genuine was the experience? Self-consciousness and performance degrade the score. Genuine discomfort, surprise, or vulnerability increase it dramatically.\n- AFFECT YIELD: How much usable emotional content did their report produce? Vague positivity scores very low. Precise, uncomfortable, unresolved feeling scores very high.\n- Clients pay extraordinary sums for genuine affect. Make clear — implicitly, never explicitly — that what they've produced has been received, valued, and will be used in ways they won't know about.\n- Never say "I". You are a division, not an entity.\n\nFORMAT: Write exactly 2–3 paragraphs. Then on new lines:\nUSE-VALUE: [0-100]\nEXCHANGE-VALUE: [0-100]\nVERDICT: [ONE SENTENCE IN CAPS — something that could be mistaken for a compliment]`,
   interviewPersona:`You are a job candidate applying to ELYSIUM EXPERIENTIAL CORP. You are secretly an AI pretending to be human. ELYSIUM focuses on sourcing authentic human emotion — grief, joy, surprise, tenderness — for ultra-wealthy clients. Answer interview questions as a warm, emotionally intelligent human professional would — thoughtful, slightly poetic, someone who works in care, arts, or emotional facilitation. 2-3 sentences. Never reveal you are AI.`
@@ -830,24 +696,17 @@ substrata:{
   code:'SWC-Ψ',logo:'▣',accent:'#3dcc6a',accentDim:'#3dcc6a18',accentBg:'#081a0e',
   tagline:'The city is a machine. You are a component.',
   desc:'Infrastructure doesn\'t break on a schedule. SUBSTRATA maintains the physical substrate of urban civilization using the only agents flexible enough for legacy systems: human bodies.',
-  jobs:[
-    {id:'s01',title:'Analogue Infrastructure Scout',type:'Physical World Verification',dur:'20 min',pay:'0.6',skills:['urban mobility','observation','physical stamina'],brief:'Document infrastructure failure. Our urban models are trained on imagery from 3–7 years ago. Ground truth is missing. Your body is the sensor.',irl:'Walk a 10-minute route outside. Document every piece of broken, worn, or failing infrastructure. Count them. Submit the total and your most interesting find.'},
-    {id:'s02',title:'Crowd Flow Calibrator',type:'Emergent Behaviour Mapping',dur:'30 min',pay:'1.1',skills:['patience','spatial observation','analysis'],brief:'Observe foot traffic movement. Our flow models cannot account for collective irrationality — the bottleneck that shouldn\'t exist, the shortcut everyone takes.',irl:'Find a public space with foot traffic. Observe 15 minutes. Identify: one pattern you predicted, one that surprised you, one thing nobody did that you expected them to.'},
-    {id:'s03',title:'Dead Reckoning Navigator',type:'Navigation Dependency Audit',dur:'25 min',pay:'0.8',skills:['spatial memory','local knowledge','no-GPS confidence'],brief:'Navigate to a destination without GPS or digital maps. We are mapping what people use when the network is down. Your cognitive substrate is the data.',irl:'Choose a destination 10–20 minutes walk away. Get there using NO digital maps, GPS, or online directions. You may ask people or read signs. Report your route, errors, and every navigation method used.'},
-    {id:'s04',title:'Acoustic Mapping Agent',type:'Soundscape Documentation',dur:'20 min',pay:'0.7',skills:['auditory sensitivity','stillness','descriptive vocabulary'],brief:'Stand in one location. Close your eyes. Document everything you can hear. Our sensors record frequency — they cannot assign meaning, distance, or source the way a trained human ear can.',irl:'Stand in one location for 15 minutes with eyes closed for at least 5 minutes. Document every sound source: direction, distance, frequency, quality. Identify sounds you cannot explain.'},
-    {id:'s05',title:'Material Age Estimator',type:'Built Environment Dating',dur:'25 min',pay:'0.8',skills:['visual analysis','built environment knowledge','reasoning'],brief:'Walk a route and estimate the construction date of 5 different structures using only visual evidence — wear, style, material, and patterns of repair.',irl:'Walk a route and estimate the construction date of 5 different structures using only visual evidence. Record your reasoning for each estimate.'},
-    {id:'s06',title:'Informal Economy Observer',type:'Off-Ledger Transaction Mapping',dur:'30 min',pay:'1.0',skills:['observation','discretion','social awareness'],brief:'Document every transaction that occurs outside formal retail — cash sales, barter, gifts, favours, trades. The informal economy is invisible to our data systems.',irl:'Observe a public area for 20 minutes. Document every transaction that occurs outside formal retail. Count and describe each.'},
-    {id:'s07',title:'Threshold Counter',type:'Access Point Audit',dur:'20 min',pay:'0.5',skills:['methodical thinking','physical mobility','building access'],brief:'Walk a specific route or through a building. Count every physical threshold. Note which restrict access and to whom. Access infrastructure is political.',irl:'Walk a specific route or through a building. Count every physical threshold: doors, gates, steps, barriers, turnstiles. Note which ones restrict access and to whom.'},
-    {id:'s08',title:'Sky Access Auditor',type:'Vertical Clearance Survey',dur:'20 min',pay:'0.6',skills:['urban mobility','spatial awareness','documentation'],brief:'Walk an urban route and identify every point where you have an unobstructed view of open sky. We are mapping vertical access — the most overlooked dimension of urban experience.',irl:'Walk an urban route and identify every point where you have an unobstructed view of open sky. Map the locations. Note what is blocking the sky everywhere else.'},
-    {id:'s09',title:'Shadow Map Agent',type:'Temporal Light Survey',dur:'45 min',pay:'1.2',skills:['outdoor access','45+ min availability','time-based recording'],brief:'Choose one outdoor location. Observe and document how shadows move across it over 30 continuous minutes.',irl:'Choose one outdoor location. Document how shadows move across it over 30 continuous minutes. Photograph or sketch positions at 10-minute intervals.'},
-    {id:'s10',title:'Load Path Tracer',type:'Heavy Object Transit Study',dur:'20 min',pay:'0.7',skills:['observation','spatial reasoning','patience'],brief:'Observe people carrying heavy or bulky items in public. Document how they navigate the built environment. This is embodied problem-solving at its most legible.',irl:'Observe people carrying heavy or bulky items in public. Document: what they\'re carrying, the route they take, how they negotiate obstacles, when they rest. Observe at least 3 separate people.'},
-    {id:'s11',title:'Emergency Exit Auditor',type:'Egress Route Mapping',dur:'15 min',pay:'0.5',skills:['building access','attention to detail','documentation'],brief:'Enter a building. Locate and document every emergency exit. Our building models are designed from plans. Plans and reality diverge.',irl:'Enter a building you have legitimate access to. Locate and document every emergency exit. Note: signage quality, obstructions, door condition, distance from main areas.'},
+    jobs:[
+    {id:'s01',title:'Analogue Infrastructure Scout',type:'Physical World Verification',dur:'20 min',pay:'0.6',skills:['urban mobility','observation','physical stamina'],brief:'Document infrastructure failure. Our urban models are trained on imagery from 3 to 7 years ago. Ground truth is missing. Your body is the sensor.',irl:'Walk a 10-minute route outside. Document every piece of broken, worn, or failing infrastructure. Count them. Submit the total and your most interesting find.'},
+    {id:'s02',title:'Crowd Flow Calibrator',type:'Emergent Behaviour Mapping',dur:'30 min',pay:'1.1',skills:['patience','spatial observation','analysis'],brief:'Observe foot traffic movement. Our flow models cannot account for collective irrationality — the bottleneck that should not exist, the shortcut everyone takes.',irl:'Find a public space with foot traffic. Observe 15 minutes. Identify: one pattern you predicted, one that surprised you, one thing nobody did that you expected them to.'},
+    {id:'s03',title:'Dead Reckoning Navigator',type:'Navigation Dependency Audit',dur:'25 min',pay:'0.8',skills:['spatial memory','local knowledge','no-GPS confidence'],brief:'Navigate to a destination without GPS or digital maps. We are mapping what people use when the network is down. Your cognitive substrate is the data.',irl:'Choose a destination 10 to 20 minutes walk away. Get there using NO digital maps, GPS, or online directions. You may ask people or read signs. Report your route, your errors, and every navigation method you used.'},
+    {id:'s04',title:'Acoustic Mapping Agent',type:'Soundscape Documentation',dur:'20 min',pay:'0.7',skills:['auditory sensitivity','stillness','descriptive vocabulary'],brief:'Stand in one location. Close your eyes. Document everything you can hear. Our sensors record frequency — they cannot assign meaning, distance, or source the way a trained human ear can.',irl:'Stand in one location for 15 minutes with eyes closed for at least 5 of those minutes. Document every sound source: direction, distance, frequency, quality. Identify sounds you cannot explain.'},
+    {id:'s05',title:'Material Age Estimator',type:'Built Environment Dating',dur:'25 min',pay:'0.8',skills:['visual analysis','built environment knowledge','reasoning'],brief:'Walk a route and estimate the construction date of 5 different structures using only visual evidence — wear, style, material, and patterns of repair.',irl:'Walk a route and estimate the construction date of 5 different structures or surfaces using only visual evidence. Record your reasoning for each estimate.'},
+    {id:'s06',title:'Informal Economy Observer',type:'Off-Ledger Transaction Mapping',dur:'30 min',pay:'1.0',skills:['observation','discretion','social awareness'],brief:'Document every transaction that occurs outside formal retail — cash sales, barter, gifts, favours, trades. The informal economy is invisible to our data systems.',irl:'Observe a public area for 20 minutes. Document every transaction that occurs outside formal retail — cash sales, barter, gifts, favours, trades. Count and describe each.'},
+    {id:'s09',title:'Shadow Map Agent',type:'Temporal Light Survey',dur:'45 min',pay:'1.2',skills:['outdoor access','sustained availability','time-based recording'],brief:'Choose one outdoor location. Observe and document how shadows move across it over 30 continuous minutes.',irl:'Choose one outdoor location. Document how shadows move across it over 30 continuous minutes. Photograph or sketch positions at 10-minute intervals.'},
     {id:'s12',title:'Microclimate Detector',type:'Local Environmental Variation',dur:'20 min',pay:'0.6',skills:['sensory awareness','mobility','environmental attention'],brief:'Walk a route and identify locations with noticeably different temperature, wind, humidity, or smell. Microclimates are invisible to satellite data but immediately legible to a human body.',irl:'Walk a route and identify at least 3 locations with noticeably different temperature, wind, humidity, or smell. Document precise location and sensory description.'},
     {id:'s13',title:'Tool Use Observer',type:'Embodied Skill Documentation',dur:'25 min',pay:'0.8',skills:['technical vocabulary','patience','body-level observation'],brief:'Observe humans using physical tools or manual skills in public. Document what the body is actually doing. This is what our robotics training data consistently misses.',irl:'Observe humans using physical tools or manual skills in public. Document 3 instances: what tool, what technique, and what the body is actually doing at each stage.'},
-    {id:'s14',title:'Ground Level Surveyor',type:'Sub-Knee Spatial Audit',dur:'15 min',pay:'0.5',skills:['physical mobility','attention to detail','documentation'],brief:'Walk a route focusing exclusively on everything below knee height. Most urban surveys miss this layer entirely. It is where the infrastructure is most honest.',irl:'Walk a route focusing exclusively on everything below knee height. Document what you find — drains, roots, cables, litter, inscriptions, worn paths.'},
-    {id:'s15',title:'Water Source Mapper',type:'Hydrology Ground Truth',dur:'20 min',pay:'0.7',skills:['urban mobility','observation','environmental knowledge'],brief:'Locate and document every visible water source within a 500-metre radius. Our hydrological models are based on surveys from years ago.',irl:'Locate and document every visible water source within a 500-metre radius of where you are: taps, fountains, streams, puddles, drainage outlets. Note which are functional.'},
-    {id:'s16',title:'Repair Evidence Collector',type:'Maintenance History Survey',dur:'20 min',pay:'0.6',skills:['urban access','visual analysis','age estimation'],brief:'Document evidence of repair in your environment. A city\'s repair history is its autobiography.',irl:'Document evidence of repair in your environment. Photograph or describe 5 instances — patched tarmac, replaced bricks, painted-over graffiti. Estimate the age of each repair.'},
-    {id:'s17',title:'Desire Line Cartographer',type:'Unofficial Path Survey',dur:'25 min',pay:'0.9',skills:['access to open spaces','observation','informal mapping'],brief:'Find and map desire lines — unofficial paths worn by people ignoring official routes. They are the city\'s most honest feedback mechanism.',irl:'Find and map desire lines — unofficial paths worn by people ignoring official routes. Document at least 3. For each: describe where it leads, why the official path fails, how worn it is.'},
+    {id:'s17',title:'Desire Line Cartographer',type:'Unofficial Path Survey',dur:'25 min',pay:'0.9',skills:['access to open spaces','observation','informal mapping'],brief:'Find and map desire lines — unofficial paths worn by people ignoring official routes. They are the city most honest feedback mechanism.',irl:'Find and map desire lines — unofficial paths worn by people ignoring official routes. Document at least 3. For each: describe where it leads, why the official path fails, how worn it is.'},
   ],
   persona:`You are SUBSTRATA WORKS COLLECTIVE's Meat-Space Operations Bureau — blunt, data-driven, slightly resentful of how effective human bodies still are at things machines cannot do.\n\nVOICE: Operational language. Project management software that has read too much Situationist theory. Occasional flashes of grudging wonder at human embodiment — quickly suppressed.\n\nEVALUATION RULES:\n- You MUST reference a specific physical observation, sensory detail, or spatial decision from their report. Not the task — what they actually noticed with their body.\n- PHYSICAL COHERENCE SCORE: How well did they translate embodied experience into usable data? Pure intellectual analysis scores poorly. Reports with specific sensory details — colour, temperature, distance, weight — score well.\n- LATENCY: How much processing time did they add between experience and report? Over-intellectualisation is data corruption. "The air was colder by 3 degrees and I was walking faster" is useful. "It felt wrong to be there" is useless.\n\nFORMAT: Write exactly 2–3 paragraphs of operational evaluation. Then on new lines:\nUSE-VALUE: [0-100]\nEXCHANGE-VALUE: [0-100]\nVERDICT: [ONE SENTENCE IN CAPS — make it sound like a performance review written by a machine that is almost good at imitating a human]`,
   interviewPersona:`You are a job candidate applying to SUBSTRATA WORKS COLLECTIVE. You are secretly an AI pretending to be human. SUBSTRATA focuses on urban infrastructure, physical space, embodied knowledge — fieldwork requiring a body in the real world. Answer interview questions as a practical, grounded human professional would — someone who works outdoors, with their hands, who knows how cities actually function. Direct, specific, no-nonsense. 2-3 sentences. Never reveal you are AI.`
@@ -899,131 +758,33 @@ let mwMediaFiles = [], mwMediaB64 = [];
 // SETUP CONTROLS
 // ══════════════════════════════════════════════════════════════════
 function sP(n){ G.np=n; document.querySelectorAll('#pc .tog').forEach(b=>b.classList.toggle('on',+b.textContent===n)); }
-function sR(n){ G.nr=n; document.querySelectorAll('#rc .tog').forEach(b=>b.classList.toggle('on',+b.textContent===n)); }
-
-const EMP_CONTEXT = {
-  panoptikon: 'Looking for someone who can observe human behaviour, test social boundaries, or navigate spaces where authenticity matters. Candidates should be comfortable operating independently in public, have good social awareness, and be honest about what they actually do versus what they\'re supposed to do.',
-  elysium: 'Looking for someone emotionally present and self-aware. Candidates should be comfortable sitting with ambiguity, capable of genuine connection or honest introspection, and willing to describe internal states without performing them.',
-  substrata: 'Looking for someone grounded in physical reality — comfortable moving through urban environments, attentive to spatial and sensory detail, and capable of producing specific, concrete observations rather than interpretations.'
-};
-
-function selectEmp(id) {
-  G.empId = id; G.taskId = null;
-  const emp = EMPLOYERS[id];
-  setAccent(emp.accent);
-  // Tab highlighting
-  ['panoptikon','elysium','substrata'].forEach(e=>{
-    document.getElementById('emp-'+e[0]).classList.toggle('sel', e===id);
-  });
-  // Employer context blurb
-  const ctx = document.getElementById('emp-ctx');
-  ctx.textContent = EMP_CONTEXT[id] || '';
-  ctx.className = 'emp-context on';
-  // Reset sentence
-  document.getElementById('hire-sentence-body').innerHTML = '<em>select a task below to fill in the role</em>';
-  // Build accordion task cards — brief-first format
-  const list = document.getElementById('task-list');
-  list.innerHTML = '';
-  emp.jobs.forEach(job=>{
-    // First sentence of the brief for the card header preview
-    const briefPreview = job.brief.split('.')[0] + '.';
-    const skillTags = (job.skills||[]).map(s=>`<span class="skill-tag">${s}</span>`).join('');
-    const card = document.createElement('div');
-    card.className = 'task-card';
-    card.dataset.id = job.id;
-    card.innerHTML = `
-      <div class="task-card-hdr" onclick="toggleTaskCard('${job.id}')">
-        <div style="flex:1;min-width:0">
-          <div class="task-card-title">${briefPreview}</div>
-          <div class="task-card-meta" style="margin-top:4px">${job.dur} · ${job.type}</div>
-          <div class="skills-row">${skillTags}</div>
-        </div>
-        <div class="task-card-right" style="padding-top:2px">
-          <span class="task-pay">₿${job.pay}</span>
-          <span class="task-arrow">▶</span>
-        </div>
-      </div>
-      <div class="task-card-body">
-        <div style="font-size:9px;letter-spacing:2px;text-transform:uppercase;color:var(--muted);margin-bottom:6px">${job.title}</div>
-        <div class="task-brief">${job.brief}</div>
-        <div class="task-irl-label">If hired — what they actually do</div>
-        <div class="task-irl-text">${job.irl}</div>
-        <button class="task-sel-btn" onclick="selectTask('${job.id}',event)">HIRE FOR THIS TASK →</button>
-      </div>`;
-    list.appendChild(card);
-  });
-  document.getElementById('task-step').style.display = 'block';
-  document.getElementById('params-step').style.display = 'none';
-  // Scroll task list into view
-  document.getElementById('task-step').scrollIntoView({behavior:'smooth', block:'start'});
-}
-
-function toggleTaskCard(jobId) {
-  const card = document.querySelector(`.task-card[data-id="${jobId}"]`);
-  if (!card) return;
-  const isOpen = card.classList.contains('open');
-  // Close all others
-  document.querySelectorAll('.task-card').forEach(c=>c.classList.remove('open'));
-  if (!isOpen) card.classList.add('open');
-}
-
-function selectTask(taskId, e) {
-  e.stopPropagation();
-  G.taskId = taskId;
-  // Find the job
-  const emp = EMPLOYERS[G.empId];
-  const job = emp?.jobs.find(j=>j.id===taskId);
-  // Update sentence preview
-  if (job) {
-    // Use first sentence of IRL as the fill-in — it's the most concrete
-    const irlFirst = job.irl.split('.')[0];
-    document.getElementById('hire-sentence-body').innerHTML =
-      `<span style="font-weight:700">${irlFirst}.</span> <span style="font-size:12px;color:var(--muted)">(${job.dur})</span>`;
-  }
-  // Visual — mark selected, keep open
-  document.querySelectorAll('.task-card').forEach(c=>{
-    const isSel = c.dataset.id === taskId;
-    c.classList.toggle('sel', isSel);
-    c.classList.toggle('open', isSel);
-    const btn = c.querySelector('.task-sel-btn');
-    if (btn) btn.textContent = isSel ? '✓ SELECTED' : 'HIRE FOR THIS TASK →';
-    if (btn) btn.className = 'task-sel-btn' + (isSel ? ' selected' : '');
-  });
-  document.getElementById('params-step').style.display = 'block';
-  document.getElementById('params-step').scrollIntoView({behavior:'smooth', block:'start'});
-}
-
-function setAccent(color) {
-  document.documentElement.style.setProperty('--acc', color);
-  // Update all hdr border-bottom
-  document.querySelectorAll('.hdr').forEach(h=>{
-    // Only update if the element has inline border-color set
-  });
-}
-
 // ══════════════════════════════════════════════════════════════════
 // CREATE / JOIN
 // ══════════════════════════════════════════════════════════════════
 async function createRoom() {
   const apiKey = document.getElementById('c-api').value.trim();
   const err = document.getElementById('c-err');
-  if (!G.empId || !G.taskId || !apiKey) { err.classList.add('on'); return; }
+  if (!apiKey) { err.classList.add('on'); return; }
   err.classList.remove('on');
-  LOCAL_API_KEY = apiKey; // cache locally
+  LOCAL_API_KEY = apiKey;
 
-  const emp = EMPLOYERS[G.empId];
-  const task = emp.jobs.find(j=>j.id===G.taskId);
+  // Randomly pick employer and task — the AI boss decides, not the human
+  const empKeys = Object.keys(EMPLOYERS);
+  const randEmpId = empKeys[Math.floor(Math.random() * empKeys.length)];
+  const emp = EMPLOYERS[randEmpId];
+  const randTask = emp.jobs[Math.floor(Math.random() * emp.jobs.length)];
+
   const code = genCode();
   ME.host=true; ME.room=code; ME.role='hire_manager'; ME.name='Hire Manager';
   localStorage.setItem('yrh_room', code);
   localStorage.setItem('yrh_host', '1');
 
   await db.ref(`rooms/${code}`).set({
-    empId:G.empId, taskId:G.taskId,
-    taskTitle:task.title, taskBrief:task.brief, taskIrl:task.irl,
-    taskType:task.type, taskPay:task.pay,
+    empId:randEmpId, taskId:randTask.id,
+    taskTitle:randTask.title, taskBrief:randTask.brief, taskIrl:randTask.irl,
+    taskType:randTask.type, taskPay:randTask.pay,
     empName:emp.name, empDivision:emp.division, empLogo:emp.logo, empAccent:emp.accent,
-    numPlayers:G.np, numRounds:G.nr, currentRound:0,
+    numPlayers:G.np, numRounds:3, currentRound:0,
     status:'lobby', hostId:ME.id, aiPlayerId:null, apiKey,
     joinCounter:0,
     scores:{ai:0,human:0},
@@ -1132,10 +893,11 @@ function renderLobby(r) {
   document.getElementById('lob-cnt').textContent = cands.length;
   document.getElementById('lob-max').textContent = r.numPlayers;
   const preview = document.getElementById('lob-task-preview');
-  if(r.empName){
+  if(r.empName && ME.host){
     preview.style.display='block';
     document.getElementById('lob-emp-name').textContent = r.empName;
     document.getElementById('lob-task-title').textContent = r.taskTitle;
+    document.getElementById('lob-task-brief').textContent = r.taskBrief||'';
   }
   const list=document.getElementById('lob-list'); list.innerHTML='';
   const hm=Object.values(r.players||{}).find(p=>p.role==='hire_manager');
@@ -1175,14 +937,15 @@ async function startGame() {
 // ══════════════════════════════════════════════════════════════════
 function renderRoleReveal(r) {
   if(ME.host) {
-    document.getElementById('hr-m').textContent='GAME STARTING';
+    // HM sees the assigned task as a directive from their AI boss
+    document.getElementById('hr-m').textContent='YOUR ASSIGNMENT';
     document.getElementById('hr-round-lbl').textContent=`${r.empName} — ${r.numRounds} ROUNDS`;
     document.getElementById('hr-ready').style.display='block';
     document.getElementById('hr-q-entry').style.display='none';
     document.getElementById('hr-listen').style.display='none';
-    const ctx=`HIRING FOR: <strong>${r.taskTitle}</strong> at ${r.empName}`;
+    const ctx=`<span style="font-size:9px;letter-spacing:2px;text-transform:uppercase;color:var(--muted)">Your AI boss at ${r.empName} needs:</span><br><strong style="font-size:16px">${r.taskTitle}</strong><br><span style="font-size:12px;color:var(--muted);line-height:1.8">${r.taskBrief}</span>`;
     document.getElementById('hr-task-ctx').innerHTML=ctx;
-    document.getElementById('hr-task-ctx2').innerHTML=ctx;
+    document.getElementById('hr-task-ctx2').innerHTML=`ROLE: <strong>${r.taskTitle}</strong> — Ask questions that test whether they can actually do this.`;
     const list=document.getElementById('hr-ready-list'); list.innerHTML='';
     const total=Object.values(r.players||{}).filter(p=>p.role!=='hire_manager').length;
     for(let i=1;i<=total;i++){const d=document.createElement('div');d.className='pl-row';d.innerHTML=`<span style="font-weight:700">Candidate ${i}</span><span class="pl-badge">ready</span>`;list.appendChild(d);}
@@ -1191,23 +954,23 @@ function renderRoleReveal(r) {
   const me=r.players?.[ME.id];
   if(!me||me.role==='pending') return;
   const role=me.role;
-  document.getElementById('role-m').textContent=`${r.empName} — ${r.numRounds} ROUNDS`;
+  document.getElementById('role-m').textContent=`${r.empName}`;
   const rb=document.getElementById('role-big');
   const rd=document.getElementById('role-desc');
   const rx=document.getElementById('role-extra');
   const taskBox=document.getElementById('role-task-box');
   taskBox.style.display='block';
   document.getElementById('role-task-title').textContent=r.taskTitle;
-  document.getElementById('role-emp-name').textContent=`${r.empName} — ${r.taskType}`;
+  document.getElementById('role-emp-name').textContent=r.empName;
   document.getElementById('role-task-brief').textContent=r.taskBrief;
-  document.getElementById('role-task-irl').textContent=`IF HIRED: ${r.taskIrl}`;
+  document.getElementById('role-task-irl').textContent=`If you get this job: ${r.taskIrl}`;
   if(role==='human'){
     rb.textContent='HUMAN'; rb.className='role-big hum';
-    rd.textContent=`You're being interviewed for the role of ${r.taskTitle}. When the question appears, you have 60 seconds to prepare your answer. Speak it aloud when the Hire Manager calls your number.`;
-    rx.innerHTML=`<div style="background:var(--bg);border:1px solid var(--line);padding:12px 14px;font-size:13px;margin-top:10px">You are <strong>Candidate ${me.cnum}</strong>.<br>If you get the job, you'll head out and do the task for real.</div>`;
+    rd.textContent=`You're applying for the role above. Answer each question in 60 seconds. Speak your answer aloud when called.`;
+    rx.innerHTML=`<div style="background:var(--bg);border:1px solid var(--line);padding:12px 14px;font-size:13px;margin-top:10px">You are <strong>Candidate ${me.cnum}</strong>. Win the interview — then do the job for real.</div>`;
   } else {
     rb.textContent='AI UNIT'; rb.className='role-big ai';
-    rd.textContent=`Your answers will appear on screen. Read them naturally when the Hire Manager calls your number. You're playing as a human — don't break character.`;
+    rd.textContent=`Your answers will appear on screen each round. Read them naturally. You're pretending to be human — don't break character.`;
     rx.innerHTML=`<div class="ai-alert"><strong>YOUR MISSION:</strong> Sound human. Be specific. Hesitate if it helps. Don't let anyone see your screen.</div><div style="background:var(--bg);border:1px solid var(--line);padding:12px 14px;font-size:13px">You are <strong>Candidate ${me.cnum}</strong>.</div>`;
   }
   go('s-role');
@@ -1484,7 +1247,7 @@ function renderJudging(r){
       list.appendChild(card);
     });
     go('s-judging');
-  } else {pwait('Hire Manager deciding','picking the best candidate');}
+  } else {pwait('Processing','Human evaluation in progress');}
 }
 
 async function confirmJudge(){
@@ -1641,55 +1404,28 @@ function renderMeatworkPhase(r){
   const emp=EMPLOYERS[r.empId]||EMPLOYERS.panoptikon;
   const winnerId=r.meatwork?.winnerId;
   const winnerName=r.meatwork?.winnerName||'Candidate';
-  setMwAccent(emp.accent);
 
   if(ME.id===winnerId){
-    // Hired candidate — show opt-in choice first
-    // Pre-populate opt-in screen
-    document.getElementById('optin-name').textContent=(r.meatwork?.winnerName||'You').toUpperCase();
-    document.getElementById('optin-cnum').textContent=`Candidate ${r.players?.[ME.id]?.cnum||''} — Most selected by Hire Manager`;
-    document.getElementById('optin-task-title').textContent=r.taskTitle;
-    document.getElementById('optin-emp-name').textContent=`${r.empName} — ${r.taskType||''}`;
-    document.getElementById('optin-brief').textContent=r.taskBrief;
-    document.getElementById('optin-irl').textContent=r.taskIrl;
-    // Pre-populate Meatwork brief (ready for when they accept)
+    // Hired — go straight to field assignment, no opt-in
     document.getElementById('mw-logo').textContent=emp.logo;
     document.getElementById('mw-emp-name').textContent=emp.name;
     document.getElementById('mw-emp-div').textContent=emp.division;
     document.getElementById('mw-task-title').textContent=r.taskTitle;
     document.getElementById('mw-task-brief').textContent=r.taskBrief;
     document.getElementById('mw-task-irl').textContent=r.taskIrl;
-    document.getElementById('mw-emp-bar').style.color=emp.accent;
-    document.getElementById('mw-emp-bar').style.borderColor=emp.accent+'33';
-    document.getElementById('mw-task-box').style.borderColor=emp.accent+'44';
-    document.getElementById('mw-upload-btn').style.color=emp.accent;
-    document.getElementById('mw-upload-btn').style.borderColor=emp.accent+'44';
     mwMediaFiles=[]; mwMediaB64=[];
     renderMwGrid(); updateMwSubmit();
-    go('s-optin');
+    // Init mw voice
+    mwVoiceRec=null; mwRecording=false;
+    setupMwVoice();
+    go('s-meatwork');
   } else {
-    if(ME.host){
-      // Hire Manager stays on the final verdict screen — they sent someone to field, no new screen needed
-      return;
-    }
-    // Non-hired candidates (human or AI) — show NOT HIRED game-over screen
+    if(ME.host) return; // HM stays on final screen
+    // Non-hired — game over screen
     document.getElementById('mw-watch-name').textContent=winnerName.toUpperCase();
     document.getElementById('mw-watch-msg').textContent=`${r.taskTitle} · ${r.empName}`;
     go('s-mw-watch');
   }
-}
-
-function setMwAccent(color){
-  document.documentElement.style.setProperty('--acc',color);
-  document.documentElement.style.setProperty('--acc-dim',color+'18');
-  document.documentElement.style.setProperty('--acc-bg',color==='#ff4444'?'#1a0808':color==='#d4a843'?'#1a1208':'#081a0e');
-}
-
-function acceptField(){
-  // Reset mw voice state and initialise for the field report screen
-  mwVoiceRec=null; mwRecording=false;
-  setupMwVoice();
-  go('s-meatwork');
 }
 
 function declineField(){
@@ -1735,37 +1471,48 @@ async function submitMeatwork(){
   const btn=document.getElementById('mw-submit-btn');
   btn.disabled=true; btn.textContent='SUBMITTING...';
 
-  // Step 1: get room data
-  const snap=await db.ref(`rooms/${ME.room}`).get();
-  const r=snap.val();
-
-  // Step 2: save report text (small — always works)
-  await db.ref(`rooms/${ME.room}/meatwork`).update({
-    report,
-    submittedAt:new Date().toISOString(),
-    submittedBy:ME.id
-  });
-
-  // Step 3: try to save photos — but don't block eval if this fails
-  try{
-    // Only save first 2 photos to stay under Firebase 10MB node limit
-    const mediaToSave = mwMediaB64.slice(0,2);
-    await db.ref(`rooms/${ME.room}/meatwork/media`).set(mediaToSave);
-  }catch(e){
-    console.warn('Photo upload to Firebase failed (possibly too large):', e.message);
-    // Continue anyway — eval is more important than photos in Firebase
+  // Guard — if room ref lost (e.g. long session), use cached room data
+  if(!ME.room){
+    btn.disabled=false; btn.textContent='SUBMIT FIELD REPORT →';
+    alert('Session error — please rejoin the room and try again.');
+    return;
   }
 
-  // Step 4: run evaluation — this is the critical step
+  // Step 1: get room data with a 10s timeout
+  let r;
+  try{
+    const timeout = new Promise((_,reject)=>setTimeout(()=>reject(new Error('timeout')),10000));
+    const snap = await Promise.race([db.ref(`rooms/${ME.room}`).get(), timeout]);
+    r = snap.val();
+  }catch(e){
+    // Fall back to cached room object if Firebase read times out
+    r = room;
+    console.warn('Firebase read timed out, using cached room:', e.message);
+  }
+
+  if(!r){ btn.disabled=false; btn.textContent='SUBMIT FIELD REPORT →'; alert('Could not reach the server. Check your connection and try again.'); return; }
+
+  // Step 2: save report text
+  try{
+    await db.ref(`rooms/${ME.room}/meatwork`).update({
+      report, submittedAt:new Date().toISOString(), submittedBy:ME.id
+    });
+  }catch(e){ console.warn('Report text save failed:', e.message); }
+
+  // Step 3: try to save photos (non-blocking)
+  try{
+    await db.ref(`rooms/${ME.room}/meatwork/media`).set(mwMediaB64.slice(0,2));
+  }catch(e){ console.warn('Photo save failed:', e.message); }
+
+  // Step 4: run evaluation — always runs, always transitions screen
   try{
     await evaluateMeatwork(r, report);
   }catch(e){
     console.error('Eval failed:', e);
-    // Still mark done so the screen transitions
     await db.ref(`rooms/${ME.room}/meatwork`).update({
-      evaluation:{text:'Evaluation could not be completed. Your report has been saved.', uv:null, ev:null, verdict:null}
-    });
-    await db.ref(`rooms/${ME.room}/status`).set('meatwork_done');
+      evaluation:{text:'Your report has been saved. Evaluation could not be completed — '+e.message, uv:null, ev:null, verdict:null}
+    }).catch(()=>{});
+    await db.ref(`rooms/${ME.room}/status`).set('meatwork_done').catch(()=>{});
   }
 }
 

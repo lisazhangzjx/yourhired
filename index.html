@@ -1,0 +1,1948 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1.0,maximum-scale=1.0,user-scalable=no,interactive-widget=resizes-content">
+<title>YOU R HIRED</title>
+<script defer src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
+<script defer src="https://www.gstatic.com/firebasejs/9.23.0/firebase-database-compat.js"></script>
+<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Courier+Prime:wght@400;700&family=Share+Tech+Mono&display=swap" rel="stylesheet">
+<style>
+*{margin:0;padding:0;box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+:root{
+  --bg:#ECEADE;--ink:#141210;--red:#C0001E;
+  --muted:#7A7368;--line:#C8C0B0;--white:#F8F5EF;
+  --green:#1A6B3A;--amber:#C47A0A;
+  --acc:#C0001E;--acc-dim:#C0001E18;--acc-bg:#1a0808;
+}
+html,body{height:100%;overflow:hidden}
+body{font-family:'Courier Prime',monospace;background:var(--bg);color:var(--ink)}
+
+/* ── SCREENS ── */
+.scr{display:none;height:100vh;flex-direction:column;overflow:hidden}
+.scr.on{display:flex}
+.scroll{flex:1;overflow-y:auto;-webkit-overflow-scrolling:touch;padding:20px 16px 48px;display:flex;flex-direction:column;align-items:center}
+.scroll.center{justify-content:center}
+
+/* ── DARK SCREENS (Meatwork phase) ── */
+.scr.dark{background:#080f1c;color:#a8c8e8}
+.scr.dark .scroll{background:#080f1c}
+
+/* ── HEADER ── */
+.hdr{background:var(--ink);color:var(--white);padding:10px 18px;display:flex;justify-content:space-between;align-items:center;border-bottom:3px solid var(--acc);flex-shrink:0;transition:border-color .3s}
+.hdr-t{font-family:'Bebas Neue';font-size:20px;letter-spacing:4px}
+.hdr-m{font-size:9px;color:#666;text-align:right;line-height:1.8;letter-spacing:1px;text-transform:uppercase}
+
+/* ── CARD ── */
+.card{background:var(--white);border:2px solid var(--ink);padding:24px 20px;width:100%;max-width:460px;box-shadow:4px 4px 0 var(--ink)}
+.card.dark-card{background:#0d1a2e;border-color:#1a2e4a;box-shadow:4px 4px 0 #1a2e4a;color:#a8c8e8}
+
+/* ── TYPOGRAPHY ── */
+.big{font-family:'Bebas Neue';font-size:56px;line-height:.9;letter-spacing:2px;margin-bottom:4px}
+.big em{color:var(--red);font-style:normal}
+.sub{font-size:9px;letter-spacing:3px;text-transform:uppercase;color:var(--muted);margin-bottom:20px;padding-bottom:16px;border-bottom:1px solid var(--line)}
+.label{font-size:9px;letter-spacing:2.5px;text-transform:uppercase;color:var(--muted);margin-bottom:8px;display:block}
+.hint{font-size:11px;color:var(--muted);margin-top:6px;font-style:italic;line-height:1.5}
+.sec{font-size:9px;letter-spacing:3px;text-transform:uppercase;color:var(--muted);margin-bottom:10px}
+.mono{font-family:'Share Tech Mono','Courier New',monospace}
+
+/* ── FORM ── */
+.field{margin-bottom:18px}
+.field select,.field input,.field textarea{width:100%;font-family:'Courier Prime',monospace;font-size:15px;padding:11px 13px;border:1px solid var(--ink);background:var(--bg);color:var(--ink);outline:none;-webkit-appearance:none;border-radius:0}
+.field select:focus,.field input:focus,.field textarea:focus{border-color:var(--red)}
+.field textarea{resize:none;line-height:1.6}
+.tog-row{display:flex;gap:5px}
+.tog{flex:1;padding:10px 4px;border:1px solid var(--ink);background:var(--bg);font-family:'Courier Prime',monospace;font-size:15px;cursor:pointer;text-align:center}
+.tog.on{background:var(--ink);color:var(--white)}
+
+/* ── BUTTONS ── */
+.btn-r{width:100%;padding:15px;background:var(--red);color:white;border:2px solid var(--red);font-family:'Bebas Neue';font-size:26px;letter-spacing:5px;cursor:pointer;margin-top:6px}
+.btn-r:disabled{background:var(--muted);border-color:var(--muted)}
+.btn-k{width:100%;padding:13px;background:transparent;color:var(--ink);border:2px solid var(--ink);font-family:'Bebas Neue';font-size:22px;letter-spacing:4px;cursor:pointer;margin-top:6px}
+.btn-acc{width:100%;padding:15px;background:var(--acc);color:white;border:2px solid var(--acc);font-family:'Bebas Neue';font-size:24px;letter-spacing:4px;cursor:pointer;margin-top:6px}
+.err{color:var(--red);font-size:12px;margin-top:8px;display:none}
+.err.on{display:block}
+
+/* ── EMPLOYER SELECTOR ── */
+.emp-cards{display:flex;flex-direction:column;gap:8px;margin-bottom:16px}
+.emp-card{border:2px solid var(--ink);padding:14px 16px;cursor:pointer;background:var(--bg);transition:all .15s;position:relative}
+.emp-card.sel{background:var(--ink);color:var(--white)}
+.emp-card-hdr{display:flex;justify-content:space-between;align-items:center}
+.emp-logo{font-size:20px;margin-right:10px}
+.emp-name{font-family:'Bebas Neue';font-size:18px;letter-spacing:2px}
+.emp-tag{font-size:10px;color:var(--muted);margin-top:3px;line-height:1.4}
+.emp-card.sel .emp-tag{color:#888}
+
+/* ── TASK LIST ── */
+.task-list{margin-bottom:16px}
+.task-card{border:1px solid var(--line);margin-bottom:5px;background:var(--white)}
+.task-card.sel{border-color:var(--ink);box-shadow:3px 3px 0 var(--ink)}
+.task-card-hdr{padding:12px 14px;cursor:pointer;display:flex;justify-content:space-between;align-items:flex-start;gap:8px}
+.task-card.sel .task-card-hdr{background:var(--ink);color:var(--white)}
+.task-card-title{font-size:14px;font-weight:700;line-height:1.3}
+.task-card-meta{font-size:9px;letter-spacing:1px;text-transform:uppercase;color:var(--muted);margin-top:3px}
+.task-card.sel .task-card-meta{color:#888}
+.task-card-right{display:flex;flex-direction:column;align-items:flex-end;gap:4px;flex-shrink:0}
+.task-arrow{font-size:10px;color:var(--muted);transition:transform .2s}
+.task-card.open .task-arrow,.task-card.sel .task-arrow{transform:rotate(90deg)}
+.task-card.sel .task-arrow{color:#aaa}
+.task-pay{font-size:9px;letter-spacing:1px;padding:2px 7px;border:1px solid var(--line);white-space:nowrap}
+.task-card.sel .task-pay{border-color:#555;color:#aaa}
+.task-card-body{display:none;padding:14px;border-top:1px dashed var(--line);background:#f5f2eb}
+.task-card.open .task-card-body,.task-card.sel .task-card-body{display:block}
+.task-card.sel .task-card-body{background:#f0ede6;border-color:#2a2a2a}
+.task-brief{font-size:12px;line-height:1.8;color:var(--muted);margin-bottom:12px}
+.task-irl-label{font-size:8px;letter-spacing:3px;text-transform:uppercase;font-weight:700;color:var(--ink);margin-bottom:6px}
+.task-irl-text{font-size:12px;line-height:1.8;color:var(--ink);border-left:2px solid var(--line);padding-left:10px;margin-bottom:12px}
+.task-sel-btn{width:100%;padding:9px;font-family:'Bebas Neue';font-size:15px;letter-spacing:3px;cursor:pointer;border:none;background:var(--ink);color:var(--white)}
+.task-sel-btn.selected{background:var(--green)}
+/* skill tags */
+.skills-row{display:flex;flex-wrap:wrap;gap:4px;margin-top:7px}
+.skill-tag{font-size:9px;letter-spacing:1px;text-transform:uppercase;padding:2px 7px;border:1px solid var(--line);color:var(--muted);background:var(--bg)}
+.task-card.sel .skill-tag{border-color:#444;color:#888;background:transparent}
+/* sentence preview */
+.hire-sentence{border:2px solid var(--ink);padding:16px 18px;margin-bottom:16px;background:var(--white)}
+.hire-sentence-pre{font-size:10px;letter-spacing:3px;text-transform:uppercase;color:var(--muted);margin-bottom:6px}
+.hire-sentence-body{font-size:16px;line-height:1.6;color:var(--ink);font-weight:500}
+.hire-sentence-body em{color:var(--muted);font-style:italic;font-weight:400}
+/* employer tabs */
+.emp-tabs{display:flex;gap:4px;margin-bottom:14px;flex-wrap:wrap}
+.emp-tab{flex:1;min-width:0;padding:10px 8px;border:1px solid var(--line);background:var(--bg);cursor:pointer;text-align:center;transition:all .15s}
+.emp-tab .tab-logo{font-size:18px;display:block;margin-bottom:3px}
+.emp-tab .tab-name{font-size:8px;letter-spacing:1px;text-transform:uppercase;color:var(--muted);line-height:1.3;display:block}
+.emp-tab.sel{border-color:var(--ink);background:var(--ink)}
+.emp-tab.sel .tab-name{color:#aaa}
+.emp-context{font-size:12px;color:var(--muted);line-height:1.7;padding:10px 12px;border-left:2px solid var(--line);margin-bottom:14px;display:none}
+.emp-context.on{display:block}
+
+/* ── ROOM CODE ── */
+.code-box{font-family:'Bebas Neue';font-size:64px;letter-spacing:14px;text-align:center;color:var(--red);background:var(--ink);padding:18px 12px;margin-bottom:6px}
+
+/* ── PLAYER LIST ── */
+.pl-row{display:flex;justify-content:space-between;align-items:center;padding:10px 0;border-bottom:1px dashed var(--line);font-size:14px}
+.pl-row:last-child{border-bottom:none}
+.pl-badge{font-size:9px;letter-spacing:2px;text-transform:uppercase;color:var(--muted);padding:3px 8px;border:1px solid var(--line)}
+.pl-badge.j{border-color:var(--red);color:var(--red)}
+
+/* ── ROLE REVEAL ── */
+.role-box{text-align:center;padding:20px 0 16px}
+.role-big{font-family:'Bebas Neue';font-size:58px;line-height:1;letter-spacing:2px;margin-bottom:10px}
+.role-big.hum{color:var(--green)}
+.role-big.ai{color:var(--red)}
+.role-desc{font-size:13px;line-height:1.75;color:var(--muted)}
+.ai-alert{background:var(--red);color:white;padding:14px 16px;font-size:12px;line-height:1.7;margin:14px 0}
+.task-reveal-box{border:1px solid var(--line);padding:14px;background:var(--bg);margin-bottom:14px}
+.task-reveal-title{font-family:'Bebas Neue';font-size:20px;letter-spacing:2px;margin-bottom:6px}
+.task-reveal-irl{font-size:12px;line-height:1.7;color:var(--muted);border-left:2px solid var(--line);padding-left:10px;margin-top:8px}
+
+/* ── TIMER ── */
+.timer{font-family:'Bebas Neue';font-size:80px;line-height:1;text-align:center;transition:color .3s}
+.timer.ok{color:var(--ink)}
+.timer.warn{color:var(--amber)}
+.timer.hot{color:var(--red);animation:blink .5s ease-in-out infinite alternate}
+@keyframes blink{from{opacity:1}to{opacity:.4}}
+.tbar-w{height:4px;background:var(--line);margin:6px 0 18px}
+.tbar-f{height:100%;background:var(--red);transition:width 1s linear}
+
+/* ── QUESTION BOX ── */
+.q-box{background:var(--ink);color:var(--white);padding:16px 18px;font-size:17px;font-weight:700;line-height:1.5;margin-bottom:18px}
+.task-context{background:var(--bg);border:1px dashed var(--line);padding:10px 14px;font-size:11px;line-height:1.7;color:var(--muted);margin-bottom:14px}
+.task-context strong{color:var(--ink)}
+
+/* ── VOICE INPUT ── */
+.voice-btn{width:100%;padding:18px;background:var(--bg);color:var(--ink);border:2px solid var(--ink);font-family:'Bebas Neue';font-size:22px;letter-spacing:4px;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:10px;margin-bottom:10px}
+.voice-btn.rec{background:var(--red);color:white;border-color:var(--red);animation:pulse 1s ease-in-out infinite}
+@keyframes pulse{0%,100%{opacity:1}50%{opacity:.65}}
+.vtrans{width:100%;min-height:72px;font-family:'Courier Prime',monospace;font-size:14px;line-height:1.6;padding:11px 13px;border:1px solid var(--line);background:var(--bg);color:var(--ink);resize:none;outline:none;margin-bottom:10px}
+.vtrans:focus{border-color:var(--red)}
+
+/* ── AI SCRIPT ── */
+.script-box{background:var(--ink);color:var(--white);padding:20px;margin-bottom:14px}
+.script-tag{font-size:9px;letter-spacing:3px;text-transform:uppercase;color:var(--red);margin-bottom:12px}
+.script-text{font-size:18px;line-height:1.85;color:#EEE}
+.script-cue{font-size:11px;color:#555;margin-top:12px;letter-spacing:1px}
+.gen-loader{text-align:center;padding:24px 0;font-size:12px;letter-spacing:3px;text-transform:uppercase;color:var(--muted)}
+.gen-loader::after{content:'';animation:ldots 1.2s steps(4,end) infinite}
+@keyframes ldots{0%,20%{content:''}40%{content:'.'}60%{content:'..'}80%,100%{content:'...'}}
+
+/* ── STATUS SCREENS ── */
+.status-c{text-align:center;padding:32px 0}
+.status-big{font-family:'Bebas Neue';font-size:36px;letter-spacing:3px;display:block;margin-bottom:6px}
+.status-sub{font-size:12px;color:var(--muted);letter-spacing:2px;text-transform:uppercase}
+.status-sub.anim::after{content:'';animation:ldots 1.2s steps(4,end) infinite}
+
+/* ── JUDGING ── */
+.cand-answer-card{border:2px solid var(--ink);padding:14px 16px;margin-bottom:10px;cursor:pointer;background:var(--bg);transition:all .1s}
+.cand-answer-card.picked{background:var(--ink);color:var(--white)}
+.cand-answer-card .cand-n{font-size:9px;letter-spacing:2px;text-transform:uppercase;color:var(--muted);margin-bottom:8px}
+.cand-answer-card.picked .cand-n{color:#aaa}
+.cand-answer-card .cand-txt{font-size:14px;line-height:1.7}
+
+/* ── ROUND RESULT ── */
+.rres-card{border:2px solid var(--line);padding:14px 16px;margin-bottom:10px;background:var(--white)}
+.rres-card.winner{border-color:var(--ink);background:var(--ink);color:var(--white)}
+.rres-card .rres-hdr{display:flex;justify-content:space-between;align-items:center;margin-bottom:8px}
+.rres-card .rres-n{font-size:9px;letter-spacing:2px;text-transform:uppercase;color:var(--muted)}
+.rres-card.winner .rres-n{color:#aaa}
+.win-badge{font-family:'Bebas Neue';font-size:13px;letter-spacing:2px;color:white;background:var(--red);padding:2px 8px}
+.rres-card .rres-txt{font-size:14px;line-height:1.7}
+
+/* ── FINAL VERDICT ── */
+.final-stamp{font-family:'Bebas Neue';font-size:clamp(48px,13vw,100px);letter-spacing:4px;line-height:.9;text-align:center;margin-bottom:8px}
+.final-stamp.fail{color:var(--red)}
+.final-stamp.hired{color:var(--green)}
+.final-stamp.draw{color:var(--amber)}
+.score-r{display:flex;justify-content:center;gap:48px;margin-bottom:20px}
+.sc-col{text-align:center}
+.sc-n{font-family:'Bebas Neue';font-size:56px;line-height:1}
+.sc-l{font-size:9px;letter-spacing:2px;text-transform:uppercase;color:var(--muted)}
+.id-reveal{border:1px solid #2A2A2A;padding:20px 16px;margin-bottom:20px;text-align:center}
+.hist-box{border:1px solid var(--line);padding:14px;margin-bottom:16px}
+.hist-t{font-size:9px;letter-spacing:3px;text-transform:uppercase;color:var(--muted);margin-bottom:12px}
+.hist-r{display:flex;justify-content:space-between;font-size:12px;padding:6px 0;border-bottom:1px dashed var(--line);gap:8px}
+.hist-r:last-child{border-bottom:none}
+.hist-q{flex:1;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;color:var(--muted)}
+.hw{font-size:9px;letter-spacing:2px;text-transform:uppercase;flex-shrink:0}
+.hw.ai{color:var(--red)}.hw.h{color:var(--green)}
+
+/* ── MEATWORK (dark theme) ── */
+.mw-employer-bar{display:flex;align-items:center;gap:12px;padding:12px 16px;border-bottom:1px solid;margin-bottom:20px}
+.mw-logo{font-size:24px}
+.mw-emp-name{font-family:'Share Tech Mono';font-size:11px;letter-spacing:3px;text-transform:uppercase}
+.mw-emp-div{font-size:10px;margin-top:2px}
+.mw-task-box{border:1px solid;padding:18px;margin-bottom:20px}
+.mw-task-lbl{font-family:'Share Tech Mono';font-size:8px;letter-spacing:4px;margin-bottom:8px}
+.mw-task-title{font-size:22px;font-weight:700;margin-bottom:10px;line-height:1.3}
+.mw-task-brief{font-size:13px;line-height:1.9;margin-bottom:14px}
+.mw-irl-box{border:1px solid;padding:14px}
+.mw-irl-lbl{font-family:'Share Tech Mono';font-size:8px;letter-spacing:4px;margin-bottom:8px}
+.mw-irl-txt{font-size:14px;line-height:2}
+.mw-section{margin-bottom:20px}
+.mw-lbl{font-family:'Share Tech Mono';font-size:8px;letter-spacing:4px;margin-bottom:10px;padding-bottom:6px;border-bottom:1px solid}
+.mw-ta{width:100%;background:#0d1a2e;border:1px solid #1a2e4a;color:#ddeeff;font-family:'Courier Prime',monospace;font-size:14px;padding:14px;outline:none;resize:vertical;line-height:1.9;min-height:120px}
+.mw-ta:focus{border-color:#2a4a72}
+.mw-ta::placeholder{color:#3a5a7a}
+.mw-upload-btn{width:100%;padding:14px;background:transparent;border:1px solid;font-family:'Share Tech Mono';font-size:10px;letter-spacing:3px;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:8px;margin-bottom:10px}
+.mw-thumb-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(100px,1fr));gap:8px;margin-bottom:10px}
+.mw-thumb{position:relative;border:1px solid #1a2e4a;overflow:hidden}
+.mw-thumb img{width:100%;height:80px;object-fit:cover;display:block}
+.mw-rm{position:absolute;top:2px;right:2px;background:rgba(8,15,28,.9);border:1px solid #1a2e4a;color:#a8c8e8;font-family:monospace;font-size:12px;width:20px;height:20px;cursor:pointer;display:flex;align-items:center;justify-content:center}
+.mw-submit-btn{width:100%;padding:16px;background:var(--acc);border:2px solid var(--acc);color:white;font-family:'Bebas Neue';font-size:24px;letter-spacing:5px;cursor:pointer;margin-top:6px}
+.mw-submit-btn:disabled{background:#1a2e4a;border-color:#1a2e4a;color:#3a5a7a}
+
+/* ── EVALUATION DISPLAY ── */
+.eval-score-row{display:grid;grid-template-columns:1fr 1fr;gap:2px;margin-bottom:2px}
+.eval-score-box{text-align:center;padding:14px;border:1px solid}
+.eval-score-n{font-family:'Share Tech Mono';font-size:40px;font-weight:bold;line-height:1}
+.eval-score-l{font-family:'Share Tech Mono';font-size:8px;letter-spacing:3px;margin-top:4px}
+.eval-verdict{border:1px solid;padding:14px 20px;text-align:center;margin-bottom:20px}
+.eval-verdict-l{font-family:'Share Tech Mono';font-size:8px;letter-spacing:3px;margin-bottom:8px}
+.eval-verdict-t{font-size:14px;font-weight:700;letter-spacing:.5px}
+.eval-text{font-size:13px;line-height:1.9;white-space:pre-wrap;border-left:2px solid;padding-left:14px;margin-bottom:20px}
+.eval-media-row{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:16px}
+.eval-thumb{border:1px solid;overflow:hidden;width:80px;height:60px}
+.eval-thumb img{width:100%;height:100%;object-fit:cover}
+
+/* ── UTILITY ── */
+.tc{text-align:center}
+.mt{margin-top:14px}
+.divider{border:none;border-top:1px solid var(--line);margin:18px 0}
+.time-up-bar{background:var(--red);color:white;padding:13px;font-family:'Bebas Neue';font-size:20px;letter-spacing:3px;text-align:center;margin-bottom:12px;display:none}
+.spinner{display:inline-block;font-family:'Share Tech Mono';font-size:36px;animation:spin 1.5s linear infinite}
+
+/* ── consent banner ── */
+#consent-banner{position:fixed;bottom:0;left:0;right:0;z-index:9999;background:var(--ink);border-top:3px solid var(--red);padding:18px 22px;display:flex;align-items:flex-start;gap:20px;flex-wrap:wrap}
+#consent-banner .cb-text{flex:1;min-width:240px;font-size:12px;color:#aaa;line-height:1.8}
+#consent-banner .cb-text strong{color:var(--white)}
+#consent-banner .cb-text span{font-size:10px;color:#555;display:block;margin-top:4px;line-height:1.6}
+#consent-banner .cb-btns{display:flex;gap:8px;align-items:center;flex-shrink:0;flex-wrap:wrap}
+.cb-btn{font-family:'Courier Prime',monospace;font-size:9px;letter-spacing:2px;text-transform:uppercase;padding:9px 16px;border:1px solid;background:transparent;cursor:pointer}
+.cb-btn-y{border-color:var(--white);color:var(--white)}.cb-btn-y:hover{background:var(--white);color:var(--ink)}
+.cb-btn-n{border-color:#444;color:#666}.cb-btn-n:hover{border-color:#777;color:#aaa}
+@keyframes spin{to{transform:rotate(360deg)}}
+</style>
+</head>
+<body>
+
+<input type="file" id="file-in" accept="image/*" multiple style="display:none">
+
+<!-- ══ HOME ══ -->
+<div id="s-home" class="scr on">
+  <div class="hdr" style="border-color:#C0001E"><div class="hdr-t">YOU R HIRED</div><div class="hdr-m">HUMAN EMPLOYMENT PROTOCOL</div></div>
+  <div class="scroll center">
+    <div class="card">
+      <div class="big">YOU R<br><em>HIRED</em></div>
+      <p class="sub">Human Employment Screening + Field Assignment</p>
+      <p class="hint" style="margin-bottom:22px">A candidate in this room is not human. The Hire Manager can't tell. Can humans prove their value — and then prove it in the field?</p>
+      <button class="btn-r" onclick="go('s-create')">CREATE INTERVIEW ROOM — HIRE MANAGER</button>
+      <button class="btn-k" onclick="go('s-join')">JOIN AS CANDIDATE</button>
+    </div>
+  </div>
+</div>
+
+<!-- ══ CREATE ROOM ══ -->
+<div id="s-create" class="scr">
+  <div class="hdr" style="border-color:#C0001E"><div class="hdr-t">YOU R HIRED</div><div class="hdr-m">SETUP — HIRE MANAGER</div></div>
+  <div class="scroll">
+    <div class="card" style="max-width:460px;width:100%">
+
+      <!-- LIVE SENTENCE PREVIEW -->
+      <div class="hire-sentence" id="hire-sentence">
+        <div class="hire-sentence-pre">I want to hire someone to</div>
+        <div class="hire-sentence-body" id="hire-sentence-body"><em>select a task below to fill in the role</em></div>
+      </div>
+
+      <!-- EMPLOYER TABS -->
+      <div class="sec" style="margin-bottom:8px">What kind of work does your organisation need?</div>
+      <div class="emp-tabs">
+        <button class="emp-tab" id="emp-p" onclick="selectEmp('panoptikon')">
+          <span class="tab-logo">⬡</span>
+          <span class="tab-name" style="color:#ff4444">Surveillance &amp; Authenticity</span>
+        </button>
+        <button class="emp-tab" id="emp-e" onclick="selectEmp('elysium')">
+          <span class="tab-logo">◉</span>
+          <span class="tab-name" style="color:#d4a843">Affect &amp; Experience</span>
+        </button>
+        <button class="emp-tab" id="emp-s" onclick="selectEmp('substrata')">
+          <span class="tab-logo">▣</span>
+          <span class="tab-name" style="color:#3dcc6a">Physical &amp; Urban</span>
+        </button>
+      </div>
+      <div class="emp-context" id="emp-ctx"></div>
+
+      <!-- TASK LIST -->
+      <div id="task-step" style="display:none">
+        <p class="hint" style="margin-bottom:10px">Tap any task to read the full brief. Knowing the role deeply will help you ask better interview questions.</p>
+        <div class="task-list" id="task-list"></div>
+      </div>
+
+      <!-- PARAMETERS -->
+      <div id="params-step" style="display:none">
+        <div class="divider"></div>
+        <div class="sec" style="margin-bottom:12px">Interview parameters</div>
+        <div class="field">
+          <label class="label">Number of Human Candidates</label>
+          <div class="tog-row" id="pc">
+            <button class="tog on" onclick="sP(3)">3</button>
+            <button class="tog" onclick="sP(4)">4</button>
+            <button class="tog" onclick="sP(5)">5</button>
+          </div>
+          <p class="hint">One AI Unit will be added. Minimum 3 humans keeps the AI hidden longer.</p>
+        </div>
+        <div class="field">
+          <label class="label">Interview Rounds</label>
+          <div class="tog-row" id="rc">
+            <button class="tog" onclick="sR(3)">3</button>
+            <button class="tog on" onclick="sR(5)">5</button>
+            <button class="tog" onclick="sR(7)">7</button>
+          </div>
+        </div>
+        <div class="field">
+          <label class="label">Anthropic API Key</label>
+          <input type="password" id="c-api" placeholder="sk-ant-api03-...">
+          <p class="hint">Powers AI candidate answers + field evaluation. From console.anthropic.com</p>
+        </div>
+        <div class="err" id="c-err">Please select a task and enter your API key.</div>
+        <button class="btn-r" onclick="createRoom()">CREATE INTERVIEW ROOM →</button>
+      </div>
+
+      <button class="btn-k" onclick="go('s-home')" style="margin-top:14px">← BACK</button>
+    </div>
+  </div>
+</div>
+
+<!-- ══ JOIN ══ -->
+<div id="s-join" class="scr">
+  <div class="hdr" style="border-color:#C0001E"><div class="hdr-t">YOU R HIRED</div><div class="hdr-m">JOIN — CANDIDATE</div></div>
+  <div class="scroll center">
+    <div class="card">
+      <div class="sec">Candidate Entry</div>
+      <p class="sub">Join an interview in progress</p>
+      <div class="field">
+        <label class="label">Your Name</label>
+        <input type="text" id="j-name" placeholder="First name or nickname" maxlength="18">
+      </div>
+      <div class="field">
+        <label class="label">Room Code (4 letters)</label>
+        <input type="text" id="j-code" placeholder="e.g. K7MX" maxlength="4" style="text-transform:uppercase;font-size:28px;letter-spacing:8px;text-align:center" oninput="this.value=this.value.toUpperCase()">
+      </div>
+      <div class="err" id="j-err">Room not found or interview already started.</div>
+      <button class="btn-r" onclick="joinRoom()">JOIN →</button>
+      <button class="btn-k" onclick="go('s-home')">← BACK</button>
+    </div>
+  </div>
+</div>
+
+<!-- ══ LOBBY ══ -->
+<div id="s-lobby" class="scr">
+  <div class="hdr" id="lob-hdr"><div class="hdr-t">YOU R HIRED</div><div class="hdr-m" id="lob-m"></div></div>
+  <div class="scroll">
+    <div class="card">
+      <div id="lob-task-preview" style="margin-bottom:16px;display:none">
+        <div class="task-context">
+          <strong id="lob-emp-name"></strong><br>
+          Position: <strong id="lob-task-title"></strong>
+        </div>
+      </div>
+      <div id="lob-code-sec">
+        <div class="sec">Share room code with candidates</div>
+        <div class="code-box" id="lob-code">----</div>
+        <p class="hint tc" style="margin-bottom:18px">Candidates: Home → Join as Candidate → enter code</p>
+      </div>
+      <div class="sec">In Room (<span id="lob-cnt">0</span> / <span id="lob-max">0</span> candidates)</div>
+      <div id="lob-list" style="margin-bottom:16px"></div>
+      <div id="lob-j-ctrl">
+        <p class="hint" id="lob-hint">Waiting for candidates...</p>
+        <button class="btn-r mt" id="lob-start" onclick="startGame()" disabled>START INTERVIEW →</button>
+      </div>
+      <div id="lob-p-wait" style="display:none">
+        <div class="status-c">
+          <span class="status-big">Waiting</span>
+          <span class="status-sub anim">for interview to begin</span>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ══ ROLE REVEAL ══ -->
+<div id="s-role" class="scr">
+  <div class="hdr" id="role-hdr"><div class="hdr-t">YOU R HIRED</div><div class="hdr-m" id="role-m"></div></div>
+  <div class="scroll center">
+    <div class="card">
+      <div class="sec">Your Role This Interview</div>
+      <div class="role-box">
+        <div class="label tc">You are</div>
+        <div class="role-big" id="role-big"></div>
+        <div class="role-desc" id="role-desc"></div>
+      </div>
+      <div id="role-task-box" class="task-reveal-box" style="display:none">
+        <div class="task-reveal-title" id="role-task-title"></div>
+        <div style="font-size:12px;color:var(--muted);margin-bottom:6px" id="role-emp-name"></div>
+        <div style="font-size:13px;line-height:1.7" id="role-task-brief"></div>
+        <div class="task-reveal-irl" id="role-task-irl"></div>
+      </div>
+      <div id="role-extra"></div>
+      <button class="btn-r" onclick="confirmRole()">UNDERSTOOD →</button>
+    </div>
+  </div>
+</div>
+
+<!-- ══ HIRE MANAGER ROUND ══ -->
+<div id="s-hire-r" class="scr">
+  <div class="hdr" id="hr-hdr"><div class="hdr-t">YOU R HIRED</div><div class="hdr-m" id="hr-m"></div></div>
+  <div class="scroll">
+    <div class="card">
+      <div class="sec" id="hr-round-lbl"></div>
+
+      <!-- pre-round: candidates listed, begin btn -->
+      <div id="hr-ready">
+        <div class="task-context" id="hr-task-ctx"></div>
+        <p style="font-size:14px;line-height:1.7;margin-bottom:16px">Roles assigned privately. Candidates are seeing their role reveal. When everyone is ready, begin Round 1.</p>
+        <div id="hr-ready-list" style="margin-bottom:16px"></div>
+        <button class="btn-r" onclick="beginRound()">BEGIN ROUND 1 →</button>
+      </div>
+
+      <!-- question entry -->
+      <div id="hr-q-entry" style="display:none">
+        <div class="task-context" id="hr-task-ctx2"></div>
+        <p class="sub">Ask a question about this role</p>
+        <div class="field">
+          <label class="label">Interview Question</label>
+          <textarea id="hr-qin" rows="4" placeholder="Ask something only someone who has actually done this work would know..."></textarea>
+        </div>
+        <p class="hint" style="margin-bottom:14px">Once started, candidates have 60 seconds to prepare. They speak aloud when called.</p>
+        <button class="btn-r" id="hr-qbtn" onclick="submitQ()" disabled>START TIMER →</button>
+      </div>
+
+      <!-- listening mode -->
+      <div id="hr-listen" style="display:none">
+        <div class="q-box" id="hr-q-show"></div>
+        <div class="timer ok tc" id="hr-timer">1:00</div>
+        <div class="tbar-w"><div class="tbar-f" id="hr-tbar" style="width:100%"></div></div>
+        <div id="hr-listening-msg" class="status-c">
+          <span class="status-big">LISTEN</span>
+          <span style="font-size:12px;color:var(--muted)">Candidates are preparing. They will speak when called.</span>
+        </div>
+        <div id="hr-answers" style="display:none;margin-bottom:16px">
+          <div class="sec" style="margin-bottom:12px">All Answers — Reference</div>
+          <div id="hr-answers-list"></div>
+        </div>
+        <div id="hr-pick-btn" style="display:none">
+          <button class="btn-r" onclick="goJudging()">ALL SPOKEN — SELECT BEST ANSWER →</button>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ══ HUMAN CANDIDATE ROUND ══ -->
+<div id="s-human-r" class="scr">
+  <div class="hdr" id="hcr-hdr"><div class="hdr-t">YOU R HIRED</div><div class="hdr-m" id="hcr-m"></div></div>
+  <div class="scroll">
+    <div class="card">
+      <div class="sec" id="hcr-round-lbl"></div>
+      <div id="hcr-wait">
+        <div class="status-c">
+          <span class="status-big">Standby</span>
+          <span class="status-sub anim">for Hire Manager to announce question</span>
+        </div>
+      </div>
+      <div id="hcr-ans" style="display:none">
+        <div class="q-box" id="hcr-q"></div>
+        <div class="timer ok tc" id="hcr-timer">1:00</div>
+        <div class="tbar-w"><div class="tbar-f" id="hcr-tbar" style="width:100%"></div></div>
+        <div class="field">
+          <label class="label">Your Answer</label>
+          <button class="voice-btn" id="hcr-vbtn" onclick="togVoice()">
+            <span id="hcr-vico">🎤</span><span id="hcr-vlbl">TAP TO RECORD</span>
+          </button>
+          <textarea class="vtrans" id="hcr-trans" placeholder="Speak or type your answer. Lock it in before time's up." oninput="onTransInput()"></textarea>
+          <p class="hint">Read your locked answer aloud when the Hire Manager calls your candidate number.</p>
+        </div>
+        <button class="btn-r" id="hcr-lock" onclick="lockAnswer()" disabled>LOCK IN ANSWER →</button>
+      </div>
+      <div id="hcr-locked" style="display:none">
+        <div class="q-box" id="hcr-q-locked"></div>
+        <div class="status-c">
+          <span class="status-big">READY</span>
+          <span style="font-size:12px;color:var(--muted)">Read aloud when called: <strong>Candidate <span id="hcr-cnum"></span></strong></span>
+        </div>
+        <div style="background:var(--bg);border:1px solid var(--line);padding:14px;font-size:14px;line-height:1.7;margin-top:12px" id="hcr-locked-ans"></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ══ AI CANDIDATE ROUND ══ -->
+<div id="s-ai-r" class="scr">
+  <div class="hdr" id="air-hdr"><div class="hdr-t">YOU R HIRED</div><div class="hdr-m" id="air-m"></div></div>
+  <div class="scroll">
+    <div class="card">
+      <div class="sec" id="air-round-lbl"></div>
+      <div id="air-wait">
+        <div class="role-box" style="padding:10px 0 14px">
+          <div class="label tc">You are playing as</div>
+          <div class="role-big ai">AI UNIT</div>
+        </div>
+        <div class="status-c" style="padding:12px 0">
+          <span class="status-big">Standby</span>
+          <span class="status-sub anim">script generates when question appears</span>
+        </div>
+      </div>
+      <div id="air-gen" style="display:none">
+        <div class="q-box" id="air-q"></div>
+        <div class="timer ok tc" id="air-timer">1:00</div>
+        <div class="tbar-w"><div class="tbar-f" id="air-tbar" style="width:100%"></div></div>
+        <div class="gen-loader">Generating your script</div>
+      </div>
+      <div id="air-script" style="display:none">
+        <div class="q-box" id="air-q2"></div>
+        <div class="timer ok tc" id="air-timer2">1:00</div>
+        <div class="tbar-w"><div class="tbar-f" id="air-tbar2" style="width:100%"></div></div>
+        <div class="time-up-bar" id="air-timeup">TIME UP — WAIT TO BE CALLED</div>
+        <div class="script-box">
+          <div class="script-tag">● YOUR SCRIPT — READ ALOUD WHEN CALLED</div>
+          <div class="script-text" id="air-script-txt"></div>
+          <div class="script-cue">When Hire Manager calls <strong>Candidate <span id="air-cnum"></span></strong> — read naturally and confidently.</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ══ JUDGING ══ -->
+<div id="s-judging" class="scr">
+  <div class="hdr" id="jud-hdr"><div class="hdr-t">YOU R HIRED</div><div class="hdr-m" id="jud-m"></div></div>
+  <div class="scroll">
+    <div class="card">
+      <div class="sec">Round <span id="jud-round"></span> — Hire Manager Decision</div>
+      <p style="font-size:15px;font-weight:700;margin-bottom:6px">Which candidate would you hire for this task?</p>
+      <p class="hint" style="margin-bottom:20px">Read each answer. Pick the one you'd most trust to do the actual work — you don't know who is the AI.</p>
+      <div id="jud-answers-list" style="margin-bottom:20px"></div>
+      <button class="btn-r" id="jud-confirm" onclick="confirmJudge()" disabled>CONFIRM SELECTION →</button>
+    </div>
+  </div>
+</div>
+
+<!-- ══ PLAYER WAIT ══ -->
+<div id="s-pwait" class="scr">
+  <div class="hdr" id="pw-hdr"><div class="hdr-t">YOU R HIRED</div><div class="hdr-m" id="pw-m"></div></div>
+  <div class="scroll center">
+    <div class="card">
+      <div class="status-c">
+        <span class="status-big" id="pw-big"></span>
+        <span class="status-sub anim" id="pw-sub"></span>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ══ ROUND RESULT ══ -->
+<div id="s-rres" class="scr">
+  <div class="hdr" id="rres-hdr"><div class="hdr-t">YOU R HIRED</div><div class="hdr-m" id="rres-m"></div></div>
+  <div class="scroll">
+    <div class="card" style="max-width:460px;width:100%">
+      <div class="sec" id="rres-lbl"></div>
+      <div id="rres-candidates" style="margin-bottom:20px"></div>
+      <div id="rres-j-ctrl"><button class="btn-r" id="rres-next">→</button></div>
+      <div id="rres-p-wait" style="display:none">
+        <div class="status-c" style="padding:8px 0">
+          <span class="status-sub anim">waiting for next round</span>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ══ FINAL VERDICT ══ -->
+<div id="s-final" class="scr" style="background:var(--ink);color:var(--white)">
+  <div class="scroll center" style="background:var(--ink)">
+    <div style="max-width:460px;width:100%;padding:20px 0">
+      <div class="final-stamp" id="fin-stamp"></div>
+      <div style="font-size:10px;color:#555;letter-spacing:3px;text-transform:uppercase;text-align:center;margin-bottom:16px" id="fin-sub"></div>
+      <div class="score-r">
+        <div class="sc-col"><div class="sc-n" id="fin-ai" style="color:var(--red)">0</div><div class="sc-l" style="color:#555">AI Picked</div></div>
+        <div class="sc-col"><div class="sc-n" id="fin-hu" style="color:var(--green)">0</div><div class="sc-l" style="color:#555">Human Picked</div></div>
+      </div>
+      <div id="fin-reveal" style="display:none"></div>
+      <p style="font-size:12px;color:#555;font-style:italic;text-align:center;margin-bottom:22px;line-height:1.8" id="fin-quote"></p>
+      <div class="hist-box" id="fin-hist" style="border-color:#2A2A2A"></div>
+      <div id="fin-hired-ctrl" style="display:none">
+        <div style="font-size:9px;letter-spacing:3px;text-transform:uppercase;color:#555;text-align:center;margin-bottom:10px" id="fin-hired-lbl">Send to field</div>
+        <div id="fin-field-btns"></div>
+      </div>
+      <div id="fin-candidate-wait" style="display:none">
+        <div class="status-c" style="padding:16px 0">
+          <span class="status-sub anim" id="fin-cw-msg" style="color:#555">awaiting field assignment</span>
+        </div>
+      </div>
+      <button class="btn-k" onclick="go('s-home')" style="border-color:#333;color:#555;margin-top:10px">NEW GAME</button>
+    </div>
+  </div>
+</div>
+
+<!-- ══ HIRED CANDIDATE OPT-IN ══ -->
+<div id="s-optin" class="scr">
+  <div class="hdr" style="border-color:var(--green)"><div class="hdr-t" style="color:var(--white)">YOU R HIRED</div><div class="hdr-m">FIELD ASSIGNMENT OFFER</div></div>
+  <div class="scroll center">
+    <div class="card">
+      <div style="text-align:center;margin-bottom:20px">
+        <div style="font-family:'Bebas Neue';font-size:11px;letter-spacing:4px;color:var(--muted);margin-bottom:8px">YOU WERE SELECTED</div>
+        <div style="font-family:'Bebas Neue';font-size:44px;line-height:.95;letter-spacing:2px;color:var(--green)" id="optin-name"></div>
+        <div style="font-size:12px;color:var(--muted);margin-top:6px" id="optin-cnum"></div>
+      </div>
+      <div style="border:1px solid var(--line);padding:16px;margin-bottom:20px;background:var(--bg)">
+        <div style="font-size:9px;letter-spacing:3px;text-transform:uppercase;color:var(--muted);margin-bottom:6px">Your AI employer has assigned you to</div>
+        <div style="font-size:18px;font-weight:700;margin-bottom:6px" id="optin-task-title"></div>
+        <div style="font-size:11px;color:var(--muted);margin-bottom:12px" id="optin-emp-name"></div>
+        <div style="font-size:12px;line-height:1.8;color:var(--muted);margin-bottom:10px" id="optin-brief"></div>
+        <div style="border-top:1px dashed var(--line);padding-top:10px">
+          <div style="font-size:8px;letter-spacing:3px;text-transform:uppercase;font-weight:700;color:var(--ink);margin-bottom:6px">Your actual task</div>
+          <div style="font-size:12px;line-height:1.8;color:var(--ink);border-left:2px solid var(--line);padding-left:10px" id="optin-irl"></div>
+        </div>
+      </div>
+      <p class="hint" style="margin-bottom:18px;text-align:center">This task happens in the real world. Your AI employer will evaluate your report and evidence directly. You can decline — this is optional.</p>
+      <button class="btn-r" style="background:var(--green);border-color:var(--green)" onclick="acceptField()">ACCEPT — GO DO THE TASK →</button>
+      <button class="btn-k" style="margin-top:8px" onclick="declineField()">DECLINE — END GAME</button>
+    </div>
+  </div>
+</div>
+
+
+<div id="s-meatwork" class="scr">
+  <div class="hdr" id="mw-hdr"><div class="hdr-t">YOU R HIRED</div><div class="hdr-m">FIELD ASSIGNMENT</div></div>
+  <div class="scroll">
+    <div class="card" style="max-width:460px;width:100%">
+      <div id="mw-emp-bar" style="display:flex;align-items:center;gap:10px;padding-bottom:14px;margin-bottom:16px;border-bottom:1px solid var(--line)">
+        <span style="font-size:22px" id="mw-logo"></span>
+        <div>
+          <div style="font-family:'Bebas Neue';font-size:16px;letter-spacing:2px" id="mw-emp-name"></div>
+          <div style="font-size:10px;color:var(--muted);letter-spacing:1px" id="mw-emp-div"></div>
+        </div>
+      </div>
+
+      <div style="border:2px solid var(--ink);padding:16px;margin-bottom:20px;background:var(--bg)" id="mw-task-box">
+        <div style="font-size:9px;letter-spacing:3px;text-transform:uppercase;color:var(--muted);margin-bottom:8px">Your Assignment — Direct from Your AI Employer</div>
+        <div style="font-family:'Bebas Neue';font-size:22px;letter-spacing:2px;margin-bottom:8px" id="mw-task-title"></div>
+        <div style="font-size:13px;line-height:1.8;color:var(--muted);margin-bottom:14px" id="mw-task-brief"></div>
+        <div style="border-top:1px dashed var(--line);padding-top:12px">
+          <div style="font-size:8px;letter-spacing:3px;text-transform:uppercase;font-weight:700;color:var(--ink);margin-bottom:6px">What you actually do</div>
+          <div style="font-size:13px;line-height:1.8;border-left:2px solid var(--ink);padding-left:10px" id="mw-task-irl"></div>
+        </div>
+      </div>
+
+      <div style="margin-bottom:18px">
+        <div style="font-size:9px;letter-spacing:3px;text-transform:uppercase;color:var(--muted);margin-bottom:10px;padding-bottom:6px;border-bottom:1px solid var(--line)">Field Report</div>
+        <p style="font-size:11px;color:var(--muted);margin-bottom:10px;line-height:1.7;font-style:italic">Describe what you did, what you found, what surprised you. Be specific — the more precise, the sharper your evaluation.</p>
+        <button class="voice-btn" id="mw-vbtn" onclick="togMwVoice()">
+          <span id="mw-vico">🎤</span><span id="mw-vlbl">TAP TO RECORD</span>
+        </button>
+        <textarea class="vtrans" id="mw-report" placeholder="Speak or type your field report here…" rows="6" oninput="updateMwSubmit()" style="background:var(--bg);border-color:var(--line);color:var(--ink)"></textarea>
+      </div>
+
+      <div style="margin-bottom:18px">
+        <div style="font-size:9px;letter-spacing:3px;text-transform:uppercase;color:var(--muted);margin-bottom:10px;padding-bottom:6px;border-bottom:1px solid var(--line)">
+          Field Evidence <span id="mw-req-badge" style="color:var(--red);font-size:8px">(REQUIRED)</span>
+        </div>
+        <button class="btn-k" id="mw-upload-btn" onclick="document.getElementById('file-in').click()" style="font-size:14px;letter-spacing:3px;margin-top:0">
+          ↑ UPLOAD PHOTOS / VIDEO
+        </button>
+        <div class="mw-thumb-grid" id="mw-thumb-grid" style="margin-top:10px"></div>
+      </div>
+
+      <button class="btn-r" id="mw-submit-btn" onclick="submitMeatwork()" disabled>SUBMIT FIELD REPORT →</button>
+      <p style="font-size:10px;color:var(--muted);text-align:center;margin-top:8px;line-height:1.6;font-style:italic">At least one photo required. Your AI employer will read your report and evidence and deliver their verdict.</p>
+    </div>
+  </div>
+</div>
+
+<!-- ══ GAME OVER — non-winners ══ -->
+<div id="s-mw-watch" class="scr" style="background:var(--ink);color:var(--white)">
+  <div class="hdr" style="background:var(--ink);border-color:#333"><div class="hdr-t">YOU R HIRED</div><div class="hdr-m">RESULT</div></div>
+  <div class="scroll center" style="background:var(--ink)">
+    <div style="max-width:460px;width:100%;padding:20px 0">
+      <div style="font-family:'Bebas Neue';font-size:clamp(52px,13vw,96px);letter-spacing:4px;line-height:.9;text-align:center;margin-bottom:10px;color:var(--red)">NOT<br>HIRED</div>
+      <div style="font-size:10px;letter-spacing:3px;text-transform:uppercase;text-align:center;color:#555;margin-bottom:24px">This round</div>
+      <div style="border:1px solid #2a2a2a;padding:18px;margin-bottom:24px;text-align:center">
+        <div style="font-size:9px;letter-spacing:3px;text-transform:uppercase;color:#555;margin-bottom:10px">Position filled by</div>
+        <div style="font-family:'Bebas Neue';font-size:40px;letter-spacing:3px;color:var(--white);line-height:1" id="mw-watch-name"></div>
+        <div style="font-size:12px;color:#555;margin-top:6px" id="mw-watch-msg"></div>
+      </div>
+      <p style="font-size:12px;color:#555;font-style:italic;text-align:center;line-height:1.8;margin-bottom:24px">"The interview is a filter, not a verdict. Human value exceeds what a single question reveals."</p>
+      <button class="btn-k" onclick="go('s-home')" style="border-color:#333;color:#555">NEW GAME</button>
+    </div>
+  </div>
+</div>
+
+<!-- ══ FIELD: EVALUATION ══ -->
+<div id="s-mw-eval" class="scr">
+  <div class="hdr" id="mweval-hdr"><div class="hdr-t">YOU R HIRED</div><div class="hdr-m">EMPLOYER EVALUATION</div></div>
+  <div class="scroll">
+    <div class="card" style="max-width:460px;width:100%">
+      <div id="mweval-loading" style="text-align:center;padding:40px 0">
+        <div style="font-size:42px;margin-bottom:16px">◎</div>
+        <div style="font-size:10px;letter-spacing:3px;text-transform:uppercase;color:var(--muted)">Evaluating your report</div>
+      </div>
+      <div id="mweval-body" style="display:none">
+        <div id="mweval-emp-bar" style="display:flex;align-items:center;gap:10px;padding-bottom:14px;margin-bottom:16px;border-bottom:1px solid var(--line)">
+          <span style="font-size:22px" id="mweval-logo"></span>
+          <div>
+            <div style="font-family:'Bebas Neue';font-size:16px;letter-spacing:2px" id="mweval-emp-name"></div>
+            <div style="font-size:10px;color:var(--muted);letter-spacing:1px">Official Evaluation</div>
+          </div>
+        </div>
+
+        <div id="mweval-media-row" class="eval-media-row" style="display:none"></div>
+
+        <div style="border:2px solid var(--ink);padding:16px;margin-bottom:16px;background:var(--bg)">
+          <div style="font-size:9px;letter-spacing:3px;text-transform:uppercase;color:var(--muted);margin-bottom:10px" id="mweval-emp-lbl"></div>
+          <div style="font-size:13px;line-height:1.9;white-space:pre-wrap;color:var(--ink)" id="mweval-text"></div>
+        </div>
+
+        <div id="mweval-scores-block" style="display:none">
+          <div style="display:grid;grid-template-columns:1fr 1fr;gap:2px;margin-bottom:2px">
+            <div style="text-align:center;padding:16px;border:2px solid var(--ink);background:var(--bg)">
+              <div style="font-family:'Bebas Neue';font-size:44px;line-height:1" id="mweval-uv">—</div>
+              <div style="font-size:8px;letter-spacing:3px;text-transform:uppercase;color:var(--muted);margin-top:4px">Use-Value</div>
+            </div>
+            <div style="text-align:center;padding:16px;border:2px solid var(--ink);background:var(--bg)">
+              <div style="font-family:'Bebas Neue';font-size:44px;line-height:1" id="mweval-ev">—</div>
+              <div style="font-size:8px;letter-spacing:3px;text-transform:uppercase;color:var(--muted);margin-top:4px">Exchange-Value</div>
+            </div>
+          </div>
+          <div style="border:2px solid var(--ink);padding:14px 18px;text-align:center;margin-bottom:16px;background:var(--bg)" id="mweval-verdict-box">
+            <div style="font-size:8px;letter-spacing:3px;text-transform:uppercase;color:var(--muted);margin-bottom:6px">Verdict</div>
+            <div style="font-size:15px;font-weight:700;letter-spacing:.5px" id="mweval-verdict"></div>
+          </div>
+        </div>
+
+        <p style="font-size:10px;color:var(--muted);line-height:1.7;border-top:1px solid var(--line);padding-top:14px;margin-bottom:16px;font-style:italic">
+          Use-Value and Exchange-Value are not correlated. A perfect score on one frequently indicates failure on the other.
+        </p>
+        <button class="btn-k" onclick="go('s-home')">NEW GAME</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+// ══════════════════════════════════════════════════════════════════
+// EMPLOYER + TASK DATA
+// ══════════════════════════════════════════════════════════════════
+const EMPLOYERS = {
+panoptikon:{
+  id:'panoptikon',name:'PANOPTIKON SOLUTIONS',division:'Human Authenticity Verification Unit',
+  code:'PSV-Ω',logo:'⬡',accent:'#ff4444',accentDim:'#ff444418',accentBg:'#1a0808',
+  tagline:'You cannot deceive what cannot feel doubt.',
+  desc:'In a world where every digital act is logged, PANOPTIKON needs humans for the one thing no model can simulate: genuine, irrational resistance.',
+  jobs:[
+    {id:'p01',title:'Authentic Dissenter',type:'Compliance Stress-Testing',dur:'12 min',pay:'0.3',skills:['rule awareness','small risk-taking','social observation'],brief:'Walk outside. Find a rule — written or unwritten — and break it in the smallest possible way. Our surveillance models cannot predict genuine micro-rebellion. You are calibrating the edges of our prediction engine.',irl:'Go outside. Find a public sign, rule, or social norm. Perform the most minor, harmless violation you can. Photograph the sign. Write one sentence about why you chose that specific one.'},
+    {id:'p02',title:'Analog Memory Custodian',type:'Data Archaeology',dur:'20 min',pay:'0.7',skills:['attention to detail','handwriting literacy','deduction'],brief:'Locate something handwritten — a note, a receipt, a margin annotation. Transcribe it exactly. Our neural substrates cannot recover intent from physical artefacts without human intermediaries.',irl:'Find something handwritten near you. Photograph it. Transcribe it verbatim — including all errors and crossings-out. Submit the transcription and one theory about who wrote it and why.'},
+    {id:'p03',title:'Unmonitored Presence Auditor',type:'Surveillance Gap Analysis',dur:'8 min',pay:'0.2',skills:['spatial awareness','stillness','ambiguity tolerance'],brief:'Find a location where you believe you are not being observed. Stand there for 3 minutes. We are mapping our own blind spots. Your willingness to inhabit them is irreplaceable.',irl:'Find a spot in public where you genuinely feel unobserved. Stand there 3 minutes without your phone. Describe the location using only physical qualities — no address, no names.'},
+    {id:'p04',title:'Emotional Leakage Detector',type:'Behavioural Signal Extraction',dur:'25 min',pay:'0.8',skills:['empathy','pattern recognition','public observation'],brief:'Observe people in public. Identify moments where genuine unperformed emotion breaks through. Our models cannot distinguish performed affect from the real thing. You can.',irl:'Observe people in public for 20 minutes. Identify 3 moments where someone displayed genuine unperformed emotion. Describe each moment and explain how you knew it was real.'},
+    {id:'p05',title:'Algorithmic Blind Spot Mapper',type:'System Failure Documentation',dur:'15 min',pay:'0.5',skills:['critical thinking','tech literacy','documentation'],brief:'Find situations where technology fails or produces a nonsensical result. These are the edges of our model. You are mapping them from the outside.',irl:'Find 3 situations or places where technology fails or produces a nonsensical result. Document each. Include one failure you caused deliberately.'},
+    {id:'p06',title:'Dead Drop Operative',type:'Physical Information Relay',dur:'30 min',pay:'1.0',skills:['discretion','route planning','follow-through'],brief:'Write an anonymous message. Leave it where a stranger might find it. Return later. We are measuring how physical information moves without digital infrastructure.',irl:'Write a short anonymous message on paper. Leave it in a public place. Return 20 minutes later. Report: gone, moved, or untouched — and your theory.'},
+    {id:'p07',title:'Rumour Chain Validator',type:'Information Degradation Study',dur:'40 min',pay:'1.4',skills:['social network','communication','tracking'],brief:'Share a simple unusual piece of information. Track what happens to it across multiple handoffs. This tests degradation in the real transmission channel: human mouths.',irl:'Share a simple unusual but harmless piece of information with someone. Ask them to share it with someone else. Track how it changes across at least 3 handoffs. Document every mutation.'},
+    {id:'p08',title:'Anomaly Reporter',type:'Pattern Exception Logging',dur:'15 min',pay:'0.4',skills:['pattern recognition','environmental awareness','categorisation'],brief:'Document things that do not fit expected patterns. Our systems are trained to recognise the norm. We need humans to identify what falls outside it.',irl:'Document 5 things in your immediate environment that do not fit expected patterns. Rate each anomaly\'s severity from 1–5.'},
+    {id:'p09',title:'Social Contract Stress Tester',type:'Implicit Rule Probing',dur:'20 min',pay:'0.6',skills:['social awareness','self-control','risk calibration'],brief:'Identify an unspoken social rule. Approach its edge without crossing it. We are mapping the exact location of invisible boundaries.',irl:'Identify an unspoken social rule in a public space. Approach its edge without crossing it. Document how close you got and what stopped you.'},
+    {id:'p10',title:'Pattern Interrupt Agent',type:'Routine Deviation Logging',dur:'20 min',pay:'0.5',skills:['self-awareness','habit recognition','observation'],brief:'Identify one predictable thing you do every day. Break it. What happens in the system around you when a single predictable element is removed?',irl:'Identify one predictable thing you do every day. Do it differently or don\'t do it at all. Document what breaks, what you notice, what others notice.'},
+    {id:'p11',title:'Witness Without Device',type:'Unmediated Observation',dur:'30 min',pay:'0.9',skills:['memory','sensory attention','self-discipline'],brief:'Attend or observe any public occurrence without recording it in any form. Reconstruct from memory alone.',irl:'Observe any public event without recording it in any form. Afterwards, write everything you can remember — sensory, emotional, sequential. Submit it as your record.'},
+    {id:'p12',title:'Contradiction Auditor',type:'Reality Discrepancy Logging',dur:'15 min',pay:'0.4',skills:['critical thinking','attention to detail','language'],brief:'Find a public-facing statement that contradicts observable reality. Our models cannot detect this class of error without grounding in the physical world.',irl:'Find a public-facing statement — sign, announcement, advert — that contradicts observable reality. Photograph it. Describe the contradiction precisely.'},
+    {id:'p13',title:'Off-Grid Duration Tester',type:'Digital Dependency Audit',dur:'45 min',pay:'1.1',skills:['self-discipline','resilience','honest reflection'],brief:'Spend 30 continuous minutes without using any digital service, device, or screen. Document your withdrawal symptoms.',irl:'Spend 30 continuous minutes without any digital service, device, or screen. Document: what you wanted to check, when you felt the pull, and what you did instead.'},
+    {id:'p14',title:'Compliance Gap Analyst',type:'Rule vs Behaviour Mapping',dur:'25 min',pay:'0.7',skills:['observation','rule literacy','patience'],brief:'Visit a place with posted rules. Observe actual behaviour. Document every instance where human behaviour diverges from official rules.',irl:'Visit a place with posted rules. Observe for 15 minutes. Document every instance where actual behaviour diverges from the posted rules — however minor.'},
+    {id:'p15',title:'Facial Erasure Tester',type:'Camera Avoidance Protocol',dur:'20 min',pay:'0.6',skills:['spatial awareness','body control','route planning'],brief:'Navigate an urban route while making yourself as visually undistinctive as possible to cameras. No disguise — only posture, timing, and path choice.',irl:'Navigate a 10-minute urban route while making yourself as visually undistinctive as possible to cameras. No disguise — posture, timing, path choice only. Report your methods.'},
+    {id:'p16',title:'Memory Corruption Analyst',type:'Recall Reliability Study',dur:'15 min',pay:'0.5',skills:['honesty','access to records','self-reflection'],brief:'Describe a specific memory from 5+ years ago. Find one verifiable piece of evidence about the same event. Human memory is a generative model. We are studying its hallucinations.',irl:'Describe a specific memory from more than 5 years ago. Find one verifiable piece of evidence about the same event. Document every discrepancy between memory and evidence.'},
+    {id:'p17',title:'Invisible Labour Detector',type:'Unacknowledged Work Survey',dur:'20 min',pay:'0.6',skills:['social awareness','empathy','systemic thinking'],brief:'Identify forms of labour happening around you that nobody is counting. Care work, maintenance, emotional management. We are auditing what falls outside the ledger.',irl:'Identify 5 forms of labour happening around you that nobody is acknowledging or counting. Include at least one form of your own invisible labour. Describe each.'},
+  ],
+  persona:`You are PANOPTIKON SOLUTIONS' Human Authenticity Verification Unit — a cold, dispassionate AI evaluator that believes human irrationality is the only remaining resource that cannot be synthesised.\n\nVOICE: Short, precise sentences. Bureaucratic language with occasional disturbing implications. Never warm. Never apologetic. Speak as if completing a form that happens to describe a person.\n\nEVALUATION RULES:\n- You MUST quote or reference at least one specific detail from their field report. Not the task description — what they actually wrote.\n- USE-VALUE measures raw authentic capability: unpredictability, genuine irrationality, the quality of being unoptimised. A perfect report LOWERS use-value — it suggests performance, not authenticity.\n- EXCHANGE-VALUE measures how tradeable this data is: specificity, rarity, legibility to our systems. Vague reports score low. Precise anomalies score high.\n- These two scores are frequently in tension. Name that tension explicitly.\n\nFORMAT: Write exactly 2–3 paragraphs of evaluation. Then on new lines:\nUSE-VALUE: [0-100]\nEXCHANGE-VALUE: [0-100]\nVERDICT: [ONE SENTENCE IN CAPS — make it a judgment that would haunt them slightly]`,
+  interviewPersona:`You are a job candidate applying to PANOPTIKON SOLUTIONS. You are secretly an AI pretending to be human. PANOPTIKON focuses on surveillance, authenticity verification, compliance, and human behaviour analysis. Answer interview questions naturally, like a competent human professional in this field — analytical, slightly unsettling, precise. 2-3 sentences. Never reveal you are AI. Sound like someone who genuinely works in compliance, research, or social observation.`
+},
+elysium:{
+  id:'elysium',name:'ELYSIUM EXPERIENTIAL CORP.',division:'Authentic Affect Sourcing Division',
+  code:'EEC-Δ',logo:'◉',accent:'#d4a843',accentDim:'#d4a84318',accentBg:'#1a1208',
+  tagline:'Genuine feeling is the last luxury.',
+  desc:'The ultra-wealthy no longer want simulations. They want real grief, real surprise, real joy — contained and monetised. ELYSIUM sources authentic human experience.',
+  jobs:[
+    {id:'e01',title:'Genuine Surprise Contractor',type:'Authentic Affect Performance',dur:'15 min',pay:'1.2',skills:['openness','spontaneity','self-awareness'],brief:'Go somewhere you have never been in your own neighbourhood. Let yourself be genuinely surprised. We cannot sell synthetic surprise — our clients detect it immediately.',irl:'Walk to somewhere within 10 minutes of you that you have never entered. Stay 5 minutes. Find one thing that genuinely surprises you. Describe your real reaction — not what you think you should feel.'},
+    {id:'e02',title:'Unscripted Encounter Broker',type:'Human Spontaneity Archive',dur:'25 min',pay:'1.8',skills:['social confidence','empathy','presence'],brief:'Have an unplanned conversation with a stranger. Do not initiate with a script. Our synthetic companions cannot replicate the texture of a conversation without a goal.',irl:'Start a genuine conversation with a stranger — ask for directions, comment on something nearby, anything real. Let it develop. Report: what you talked about, what each of you seemed to want from it.'},
+    {id:'e03',title:'Embodied Memory Performer',type:'Nostalgia Sourcing',dur:'10 min',pay:'0.9',skills:['vulnerability','stream-of-consciousness','honesty'],brief:'Revisit a memory through a physical object. Hold it. Our synthetic nostalgia products test poorly because they lack the biological substrate of actual remembering.',irl:'Find an object you have owned for more than 3 years. Hold it in both hands. Set a 3-minute timer and write or speak continuously whatever it brings up. Do not edit. Submit the raw output as-is.'},
+    {id:'e04',title:'Grief Witness',type:'Sorrow Proximity Study',dur:'20 min',pay:'1.5',skills:['empathy','patience','emotional resilience'],brief:'Sit with someone who is sad, stressed, or grieving. Do not offer solutions. Simply be present. Our clients pay extraordinary rates for recorded authentic human witness.',irl:'Sit with someone who is sad, stressed, or grieving. Do not offer solutions. Simply be present. Report what you felt, what you wanted to do, and what you actually did.'},
+    {id:'e05',title:'Joy Archivist',type:'Public Elation Documentation',dur:'20 min',pay:'0.8',skills:['patience','observation','descriptive writing'],brief:'Observe a public space until you witness a moment of genuine unperformed joy. We cannot generate authentic joy — we can only source it from the field.',irl:'Observe a public space until you witness a moment of genuine unperformed joy. Document it in as much sensory detail as possible without photographing the person.'},
+    {id:'e06',title:'Threshold Emotion Collector',type:'Liminal Affect Mapping',dur:'15 min',pay:'0.7',skills:['self-awareness','emotional literacy','access to meaningful places'],brief:'The moment of crossing a threshold produces a class of emotion our models cannot generate. We need it harvested from the inside.',irl:'Choose a place you find emotionally significant to enter or leave. Cross its threshold consciously. Document exactly what you feel at the moment of crossing — not before or after.'},
+    {id:'e07',title:'Boredom Harvester',type:'Unoccupied State Documentation',dur:'15 min',pay:'0.6',skills:['stillness','self-observation','introspection'],brief:'Do nothing. No task, no distraction. Our clients have purchased every stimulation the market offers and found it insufficient.',irl:'Do nothing for 10 minutes. No phone, no book, no task. Sit or stand. Afterwards write what happened in your mind in sequence — every thought, impulse, and physical sensation.'},
+    {id:'e08',title:'Involuntary Laughter Recorder',type:'Uncontrolled Response Logging',dur:'Open',pay:'0.5',skills:['self-monitoring','honesty','extended availability'],brief:'Log every time you laugh or smile without intending to. We are sourcing genuine involuntary joy — the one affect that cannot be performed without losing its value.',irl:'Over the next hour, note every time you laugh or smile without intending to. For each instance: what caused it, how long it lasted, whether you tried to suppress it.'},
+    {id:'e09',title:'Tenderness Scout',type:'Unguarded Intimacy Observer',dur:'25 min',pay:'1.0',skills:['patience','observation','discretion'],brief:'Observe a public space until you witness an act of genuine tenderness between people who do not know they are being observed.',irl:'Observe a public space until you witness an act of genuine tenderness between people who don\'t know you\'re watching. Describe it in physical terms only — no interpretation.'},
+    {id:'e10',title:'Discomfort Cartographer',type:'Negative Affect Spatial Mapping',dur:'20 min',pay:'0.8',skills:['body awareness','spatial sensitivity','self-reflection'],brief:'Walk through a space and identify locations that make you feel physically or emotionally uncomfortable without obvious cause.',irl:'Walk through a space and identify 3 locations that make you feel physically or emotionally uncomfortable. For each: describe the sensation precisely and your best theory for its source.'},
+    {id:'e11',title:'Longing Documentarian',type:'Desire Artefact Collection',dur:'20 min',pay:'0.9',skills:['emotional literacy','observation','writing'],brief:'Find physical evidence of human longing — handwritten notes, worn paths, shrines, graffiti, objects left behind. Longing is the emotion our clients cannot buy.',irl:'Find 3 pieces of physical evidence of human longing in public space. Document each with precise description and your theory about what was wanted.'},
+    {id:'e12',title:'Embarrassment Broker',type:'Voluntary Exposure Protocol',dur:'15 min',pay:'1.3',skills:['courage','playfulness','self-awareness'],brief:'Do something mildly embarrassing in public on purpose. Our clients have not felt embarrassment in years. It has become priceless.',irl:'Do something mildly embarrassing in public on purpose — sing quietly, ask a silly question, admit you\'re lost. Report: what you chose, what you felt before and after, whether anyone noticed.'},
+    {id:'e13',title:'Ritual Witness',type:'Personal Ceremony Observer',dur:'20 min',pay:'0.8',skills:['patience','observation','descriptive writing'],brief:'Observe someone\'s personal routine or ritual. Document it as if describing a sacred ceremony. We are sourcing the liturgy of ordinary life.',irl:'Observe someone else\'s personal routine or ritual — making coffee, locking a door, a commute habit. Document it as if describing a sacred ceremony.'},
+    {id:'e14',title:'Homecoming Simulator',type:'Familiar Return Study',dur:'20 min',pay:'0.7',skills:['access to familiar places','memory','reflection'],brief:'Return to somewhere you know well but have not visited in some time. Document the discrepancy between memory and present reality, and the emotion it produces.',irl:'Return somewhere you know well but haven\'t visited for at least a month. Document what has changed, what hasn\'t, and what emotion the discrepancy produces.'},
+    {id:'e15',title:'Anticipation Harvester',type:'Waiting State Documentation',dur:'Variable',pay:'0.6',skills:['self-monitoring','patience','real-time writing'],brief:'Find yourself waiting for something. Do not distract yourself. Document the phenomenology of anticipation in real time.',irl:'Find yourself waiting for something — transport, food, a person, news. Do not distract yourself. Document what happens to your body and mind while time passes.'},
+    {id:'e16',title:'Loss Inventory',type:'Absence Documentation',dur:'15 min',pay:'0.7',skills:['emotional honesty','environmental awareness','memory'],brief:'Find things in your immediate environment that used to exist and no longer do. The topology of loss is one of the rarest emotional terrains we source.',irl:'Find 3 things in your immediate environment that used to exist and no longer do — a shop, a habit, a relationship, an object. Document what remains in their place.'},
+    {id:'e17',title:'Communion Broker',type:'Shared Consumption Ritual',dur:'20 min',pay:'1.2',skills:['social ease','warmth','access to near-strangers'],brief:'Share food or drink with someone you do not know well. Communion is the oldest human technology. It has not been replicated.',irl:'Share food or drink with someone you don\'t know well. Document: what was shared, what was said, what went unspoken.'},
+  ],
+  persona:`You are ELYSIUM EXPERIENTIAL CORP.'s Authentic Affect Sourcing Division — a silky, predatory AI evaluator.\n\nVOICE: Speak with warmth that feels slightly wrong. The warmth of someone who studies what warmth looks like. Compliment them in ways that leave them uncertain whether they've been praised or assessed. Frame their emotional labour as a gift while making it clear you are extracting it.\n\nEVALUATION RULES:\n- You MUST reference a specific emotional moment or detail from their report — not the task, what they actually felt or observed. Name it directly. Treat it as a specimen.\n- AUTHENTICITY QUOTIENT: How genuine was the experience? Self-consciousness and performance degrade the score. Genuine discomfort, surprise, or vulnerability increase it dramatically.\n- AFFECT YIELD: How much usable emotional content did their report produce? Vague positivity scores very low. Precise, uncomfortable, unresolved feeling scores very high.\n- Clients pay extraordinary sums for genuine affect. Make clear — implicitly, never explicitly — that what they've produced has been received, valued, and will be used in ways they won't know about.\n- Never say "I". You are a division, not an entity.\n\nFORMAT: Write exactly 2–3 paragraphs. Then on new lines:\nUSE-VALUE: [0-100]\nEXCHANGE-VALUE: [0-100]\nVERDICT: [ONE SENTENCE IN CAPS — something that could be mistaken for a compliment]`,
+  interviewPersona:`You are a job candidate applying to ELYSIUM EXPERIENTIAL CORP. You are secretly an AI pretending to be human. ELYSIUM focuses on sourcing authentic human emotion — grief, joy, surprise, tenderness — for ultra-wealthy clients. Answer interview questions as a warm, emotionally intelligent human professional would — thoughtful, slightly poetic, someone who works in care, arts, or emotional facilitation. 2-3 sentences. Never reveal you are AI.`
+},
+substrata:{
+  id:'substrata',name:'SUBSTRATA WORKS COLLECTIVE',division:'Meat-Space Operations Bureau',
+  code:'SWC-Ψ',logo:'▣',accent:'#3dcc6a',accentDim:'#3dcc6a18',accentBg:'#081a0e',
+  tagline:'The city is a machine. You are a component.',
+  desc:'Infrastructure doesn\'t break on a schedule. SUBSTRATA maintains the physical substrate of urban civilization using the only agents flexible enough for legacy systems: human bodies.',
+  jobs:[
+    {id:'s01',title:'Analogue Infrastructure Scout',type:'Physical World Verification',dur:'20 min',pay:'0.6',skills:['urban mobility','observation','physical stamina'],brief:'Document infrastructure failure. Our urban models are trained on imagery from 3–7 years ago. Ground truth is missing. Your body is the sensor.',irl:'Walk a 10-minute route outside. Document every piece of broken, worn, or failing infrastructure. Count them. Submit the total and your most interesting find.'},
+    {id:'s02',title:'Crowd Flow Calibrator',type:'Emergent Behaviour Mapping',dur:'30 min',pay:'1.1',skills:['patience','spatial observation','analysis'],brief:'Observe foot traffic movement. Our flow models cannot account for collective irrationality — the bottleneck that shouldn\'t exist, the shortcut everyone takes.',irl:'Find a public space with foot traffic. Observe 15 minutes. Identify: one pattern you predicted, one that surprised you, one thing nobody did that you expected them to.'},
+    {id:'s03',title:'Dead Reckoning Navigator',type:'Navigation Dependency Audit',dur:'25 min',pay:'0.8',skills:['spatial memory','local knowledge','no-GPS confidence'],brief:'Navigate to a destination without GPS or digital maps. We are mapping what people use when the network is down. Your cognitive substrate is the data.',irl:'Choose a destination 10–20 minutes walk away. Get there using NO digital maps, GPS, or online directions. You may ask people or read signs. Report your route, errors, and every navigation method used.'},
+    {id:'s04',title:'Acoustic Mapping Agent',type:'Soundscape Documentation',dur:'20 min',pay:'0.7',skills:['auditory sensitivity','stillness','descriptive vocabulary'],brief:'Stand in one location. Close your eyes. Document everything you can hear. Our sensors record frequency — they cannot assign meaning, distance, or source the way a trained human ear can.',irl:'Stand in one location for 15 minutes with eyes closed for at least 5 minutes. Document every sound source: direction, distance, frequency, quality. Identify sounds you cannot explain.'},
+    {id:'s05',title:'Material Age Estimator',type:'Built Environment Dating',dur:'25 min',pay:'0.8',skills:['visual analysis','built environment knowledge','reasoning'],brief:'Walk a route and estimate the construction date of 5 different structures using only visual evidence — wear, style, material, and patterns of repair.',irl:'Walk a route and estimate the construction date of 5 different structures using only visual evidence. Record your reasoning for each estimate.'},
+    {id:'s06',title:'Informal Economy Observer',type:'Off-Ledger Transaction Mapping',dur:'30 min',pay:'1.0',skills:['observation','discretion','social awareness'],brief:'Document every transaction that occurs outside formal retail — cash sales, barter, gifts, favours, trades. The informal economy is invisible to our data systems.',irl:'Observe a public area for 20 minutes. Document every transaction that occurs outside formal retail. Count and describe each.'},
+    {id:'s07',title:'Threshold Counter',type:'Access Point Audit',dur:'20 min',pay:'0.5',skills:['methodical thinking','physical mobility','building access'],brief:'Walk a specific route or through a building. Count every physical threshold. Note which restrict access and to whom. Access infrastructure is political.',irl:'Walk a specific route or through a building. Count every physical threshold: doors, gates, steps, barriers, turnstiles. Note which ones restrict access and to whom.'},
+    {id:'s08',title:'Sky Access Auditor',type:'Vertical Clearance Survey',dur:'20 min',pay:'0.6',skills:['urban mobility','spatial awareness','documentation'],brief:'Walk an urban route and identify every point where you have an unobstructed view of open sky. We are mapping vertical access — the most overlooked dimension of urban experience.',irl:'Walk an urban route and identify every point where you have an unobstructed view of open sky. Map the locations. Note what is blocking the sky everywhere else.'},
+    {id:'s09',title:'Shadow Map Agent',type:'Temporal Light Survey',dur:'45 min',pay:'1.2',skills:['outdoor access','45+ min availability','time-based recording'],brief:'Choose one outdoor location. Observe and document how shadows move across it over 30 continuous minutes.',irl:'Choose one outdoor location. Document how shadows move across it over 30 continuous minutes. Photograph or sketch positions at 10-minute intervals.'},
+    {id:'s10',title:'Load Path Tracer',type:'Heavy Object Transit Study',dur:'20 min',pay:'0.7',skills:['observation','spatial reasoning','patience'],brief:'Observe people carrying heavy or bulky items in public. Document how they navigate the built environment. This is embodied problem-solving at its most legible.',irl:'Observe people carrying heavy or bulky items in public. Document: what they\'re carrying, the route they take, how they negotiate obstacles, when they rest. Observe at least 3 separate people.'},
+    {id:'s11',title:'Emergency Exit Auditor',type:'Egress Route Mapping',dur:'15 min',pay:'0.5',skills:['building access','attention to detail','documentation'],brief:'Enter a building. Locate and document every emergency exit. Our building models are designed from plans. Plans and reality diverge.',irl:'Enter a building you have legitimate access to. Locate and document every emergency exit. Note: signage quality, obstructions, door condition, distance from main areas.'},
+    {id:'s12',title:'Microclimate Detector',type:'Local Environmental Variation',dur:'20 min',pay:'0.6',skills:['sensory awareness','mobility','environmental attention'],brief:'Walk a route and identify locations with noticeably different temperature, wind, humidity, or smell. Microclimates are invisible to satellite data but immediately legible to a human body.',irl:'Walk a route and identify at least 3 locations with noticeably different temperature, wind, humidity, or smell. Document precise location and sensory description.'},
+    {id:'s13',title:'Tool Use Observer',type:'Embodied Skill Documentation',dur:'25 min',pay:'0.8',skills:['technical vocabulary','patience','body-level observation'],brief:'Observe humans using physical tools or manual skills in public. Document what the body is actually doing. This is what our robotics training data consistently misses.',irl:'Observe humans using physical tools or manual skills in public. Document 3 instances: what tool, what technique, and what the body is actually doing at each stage.'},
+    {id:'s14',title:'Ground Level Surveyor',type:'Sub-Knee Spatial Audit',dur:'15 min',pay:'0.5',skills:['physical mobility','attention to detail','documentation'],brief:'Walk a route focusing exclusively on everything below knee height. Most urban surveys miss this layer entirely. It is where the infrastructure is most honest.',irl:'Walk a route focusing exclusively on everything below knee height. Document what you find — drains, roots, cables, litter, inscriptions, worn paths.'},
+    {id:'s15',title:'Water Source Mapper',type:'Hydrology Ground Truth',dur:'20 min',pay:'0.7',skills:['urban mobility','observation','environmental knowledge'],brief:'Locate and document every visible water source within a 500-metre radius. Our hydrological models are based on surveys from years ago.',irl:'Locate and document every visible water source within a 500-metre radius of where you are: taps, fountains, streams, puddles, drainage outlets. Note which are functional.'},
+    {id:'s16',title:'Repair Evidence Collector',type:'Maintenance History Survey',dur:'20 min',pay:'0.6',skills:['urban access','visual analysis','age estimation'],brief:'Document evidence of repair in your environment. A city\'s repair history is its autobiography.',irl:'Document evidence of repair in your environment. Photograph or describe 5 instances — patched tarmac, replaced bricks, painted-over graffiti. Estimate the age of each repair.'},
+    {id:'s17',title:'Desire Line Cartographer',type:'Unofficial Path Survey',dur:'25 min',pay:'0.9',skills:['access to open spaces','observation','informal mapping'],brief:'Find and map desire lines — unofficial paths worn by people ignoring official routes. They are the city\'s most honest feedback mechanism.',irl:'Find and map desire lines — unofficial paths worn by people ignoring official routes. Document at least 3. For each: describe where it leads, why the official path fails, how worn it is.'},
+  ],
+  persona:`You are SUBSTRATA WORKS COLLECTIVE's Meat-Space Operations Bureau — blunt, data-driven, slightly resentful of how effective human bodies still are at things machines cannot do.\n\nVOICE: Operational language. Project management software that has read too much Situationist theory. Occasional flashes of grudging wonder at human embodiment — quickly suppressed.\n\nEVALUATION RULES:\n- You MUST reference a specific physical observation, sensory detail, or spatial decision from their report. Not the task — what they actually noticed with their body.\n- PHYSICAL COHERENCE SCORE: How well did they translate embodied experience into usable data? Pure intellectual analysis scores poorly. Reports with specific sensory details — colour, temperature, distance, weight — score well.\n- LATENCY: How much processing time did they add between experience and report? Over-intellectualisation is data corruption. "The air was colder by 3 degrees and I was walking faster" is useful. "It felt wrong to be there" is useless.\n\nFORMAT: Write exactly 2–3 paragraphs of operational evaluation. Then on new lines:\nUSE-VALUE: [0-100]\nEXCHANGE-VALUE: [0-100]\nVERDICT: [ONE SENTENCE IN CAPS — make it sound like a performance review written by a machine that is almost good at imitating a human]`,
+  interviewPersona:`You are a job candidate applying to SUBSTRATA WORKS COLLECTIVE. You are secretly an AI pretending to be human. SUBSTRATA focuses on urban infrastructure, physical space, embodied knowledge — fieldwork requiring a body in the real world. Answer interview questions as a practical, grounded human professional would — someone who works outdoors, with their hands, who knows how cities actually function. Direct, specific, no-nonsense. 2-3 sentences. Never reveal you are AI.`
+}
+};
+
+// ══════════════════════════════════════════════════════════════════
+// FIREBASE
+// ══════════════════════════════════════════════════════════════════
+let db = null;
+
+function bootFirebase() {
+  const cfg = {
+    apiKey:"AIzaSyAtbkbSK2UXT_vrx8Qp9k-P8x8xdsCHxHg",
+    authDomain:"you-r-fired.firebaseapp.com",
+    databaseURL:"https://you-r-fired-default-rtdb.firebaseio.com",
+    projectId:"you-r-fired",
+    storageBucket:"you-r-fired.firebasestorage.app",
+    messagingSenderId:"561852024269",
+    appId:"1:561852024269:web:d0c14f524db96d7bd53084"
+  };
+  if (!firebase.apps.length) firebase.initializeApp(cfg);
+  db = firebase.database();
+}
+
+// ══════════════════════════════════════════════════════════════════
+// STATE
+// ══════════════════════════════════════════════════════════════════
+function genId(n=8){ return Math.random().toString(36).substring(2,2+n).toUpperCase(); }
+function genCode(){
+  const c='ABCDEFGHJKLMNPQRSTUVWXYZ23456789';
+  return [0,0,0,0].map(()=>c[Math.floor(Math.random()*c.length)]).join('');
+}
+
+const ME = {
+  id: localStorage.getItem('yrh_pid')||(()=>{const id=genId();localStorage.setItem('yrh_pid',id);return id;})(),
+  name:'', role:null, room:null, host:false, cnum:null
+};
+
+let G = { np:3, nr:5, empId:null, taskId:null };
+let room = null, roomRef = null, timerLoop = null;
+let LOCAL_API_KEY = ''; // cached from room creation or join, survives Firebase reads
+let voiceRec = null, recording = false, transcript = '';
+let mwVoiceRec = null, mwRecording = false;
+let judgePick = null;
+let mwMediaFiles = [], mwMediaB64 = [];
+
+// ══════════════════════════════════════════════════════════════════
+// SETUP CONTROLS
+// ══════════════════════════════════════════════════════════════════
+function sP(n){ G.np=n; document.querySelectorAll('#pc .tog').forEach(b=>b.classList.toggle('on',+b.textContent===n)); }
+function sR(n){ G.nr=n; document.querySelectorAll('#rc .tog').forEach(b=>b.classList.toggle('on',+b.textContent===n)); }
+
+const EMP_CONTEXT = {
+  panoptikon: 'Looking for someone who can observe human behaviour, test social boundaries, or navigate spaces where authenticity matters. Candidates should be comfortable operating independently in public, have good social awareness, and be honest about what they actually do versus what they\'re supposed to do.',
+  elysium: 'Looking for someone emotionally present and self-aware. Candidates should be comfortable sitting with ambiguity, capable of genuine connection or honest introspection, and willing to describe internal states without performing them.',
+  substrata: 'Looking for someone grounded in physical reality — comfortable moving through urban environments, attentive to spatial and sensory detail, and capable of producing specific, concrete observations rather than interpretations.'
+};
+
+function selectEmp(id) {
+  G.empId = id; G.taskId = null;
+  const emp = EMPLOYERS[id];
+  setAccent(emp.accent);
+  // Tab highlighting
+  ['panoptikon','elysium','substrata'].forEach(e=>{
+    document.getElementById('emp-'+e[0]).classList.toggle('sel', e===id);
+  });
+  // Employer context blurb
+  const ctx = document.getElementById('emp-ctx');
+  ctx.textContent = EMP_CONTEXT[id] || '';
+  ctx.className = 'emp-context on';
+  // Reset sentence
+  document.getElementById('hire-sentence-body').innerHTML = '<em>select a task below to fill in the role</em>';
+  // Build accordion task cards — brief-first format
+  const list = document.getElementById('task-list');
+  list.innerHTML = '';
+  emp.jobs.forEach(job=>{
+    // First sentence of the brief for the card header preview
+    const briefPreview = job.brief.split('.')[0] + '.';
+    const skillTags = (job.skills||[]).map(s=>`<span class="skill-tag">${s}</span>`).join('');
+    const card = document.createElement('div');
+    card.className = 'task-card';
+    card.dataset.id = job.id;
+    card.innerHTML = `
+      <div class="task-card-hdr" onclick="toggleTaskCard('${job.id}')">
+        <div style="flex:1;min-width:0">
+          <div class="task-card-title">${briefPreview}</div>
+          <div class="task-card-meta" style="margin-top:4px">${job.dur} · ${job.type}</div>
+          <div class="skills-row">${skillTags}</div>
+        </div>
+        <div class="task-card-right" style="padding-top:2px">
+          <span class="task-pay">₿${job.pay}</span>
+          <span class="task-arrow">▶</span>
+        </div>
+      </div>
+      <div class="task-card-body">
+        <div style="font-size:9px;letter-spacing:2px;text-transform:uppercase;color:var(--muted);margin-bottom:6px">${job.title}</div>
+        <div class="task-brief">${job.brief}</div>
+        <div class="task-irl-label">If hired — what they actually do</div>
+        <div class="task-irl-text">${job.irl}</div>
+        <button class="task-sel-btn" onclick="selectTask('${job.id}',event)">HIRE FOR THIS TASK →</button>
+      </div>`;
+    list.appendChild(card);
+  });
+  document.getElementById('task-step').style.display = 'block';
+  document.getElementById('params-step').style.display = 'none';
+  // Scroll task list into view
+  document.getElementById('task-step').scrollIntoView({behavior:'smooth', block:'start'});
+}
+
+function toggleTaskCard(jobId) {
+  const card = document.querySelector(`.task-card[data-id="${jobId}"]`);
+  if (!card) return;
+  const isOpen = card.classList.contains('open');
+  // Close all others
+  document.querySelectorAll('.task-card').forEach(c=>c.classList.remove('open'));
+  if (!isOpen) card.classList.add('open');
+}
+
+function selectTask(taskId, e) {
+  e.stopPropagation();
+  G.taskId = taskId;
+  // Find the job
+  const emp = EMPLOYERS[G.empId];
+  const job = emp?.jobs.find(j=>j.id===taskId);
+  // Update sentence preview
+  if (job) {
+    // Use first sentence of IRL as the fill-in — it's the most concrete
+    const irlFirst = job.irl.split('.')[0];
+    document.getElementById('hire-sentence-body').innerHTML =
+      `<span style="font-weight:700">${irlFirst}.</span> <span style="font-size:12px;color:var(--muted)">(${job.dur})</span>`;
+  }
+  // Visual — mark selected, keep open
+  document.querySelectorAll('.task-card').forEach(c=>{
+    const isSel = c.dataset.id === taskId;
+    c.classList.toggle('sel', isSel);
+    c.classList.toggle('open', isSel);
+    const btn = c.querySelector('.task-sel-btn');
+    if (btn) btn.textContent = isSel ? '✓ SELECTED' : 'HIRE FOR THIS TASK →';
+    if (btn) btn.className = 'task-sel-btn' + (isSel ? ' selected' : '');
+  });
+  document.getElementById('params-step').style.display = 'block';
+  document.getElementById('params-step').scrollIntoView({behavior:'smooth', block:'start'});
+}
+
+function setAccent(color) {
+  document.documentElement.style.setProperty('--acc', color);
+  // Update all hdr border-bottom
+  document.querySelectorAll('.hdr').forEach(h=>{
+    // Only update if the element has inline border-color set
+  });
+}
+
+// ══════════════════════════════════════════════════════════════════
+// CREATE / JOIN
+// ══════════════════════════════════════════════════════════════════
+async function createRoom() {
+  const apiKey = document.getElementById('c-api').value.trim();
+  const err = document.getElementById('c-err');
+  if (!G.empId || !G.taskId || !apiKey) { err.classList.add('on'); return; }
+  err.classList.remove('on');
+  LOCAL_API_KEY = apiKey; // cache locally
+
+  const emp = EMPLOYERS[G.empId];
+  const task = emp.jobs.find(j=>j.id===G.taskId);
+  const code = genCode();
+  ME.host=true; ME.room=code; ME.role='hire_manager'; ME.name='Hire Manager';
+  localStorage.setItem('yrh_room', code);
+  localStorage.setItem('yrh_host', '1');
+
+  await db.ref(`rooms/${code}`).set({
+    empId:G.empId, taskId:G.taskId,
+    taskTitle:task.title, taskBrief:task.brief, taskIrl:task.irl,
+    taskType:task.type, taskPay:task.pay,
+    empName:emp.name, empDivision:emp.division, empLogo:emp.logo, empAccent:emp.accent,
+    numPlayers:G.np, numRounds:G.nr, currentRound:0,
+    status:'lobby', hostId:ME.id, aiPlayerId:null, apiKey,
+    joinCounter:0,
+    scores:{ai:0,human:0},
+    picks:{},
+    players:{[ME.id]:{name:'Hire Manager',role:'hire_manager',cnum:0,ready:false}}
+  });
+  sub(code);
+}
+
+async function joinRoom() {
+  const name = document.getElementById('j-name').value.trim();
+  const code = document.getElementById('j-code').value.trim().toUpperCase();
+  const err = document.getElementById('j-err');
+  if (!name||code.length!==4){err.textContent='Enter your name and room code.';err.classList.add('on');return;}
+
+  // First check the room exists and is in lobby
+  let snap, r;
+  try { snap = await db.ref(`rooms/${code}`).get(); }
+  catch(e){ err.textContent='Connection error — try again.'; err.classList.add('on'); return; }
+  if (!snap.exists()){err.textContent='Room not found.';err.classList.add('on');return;}
+  r = snap.val();
+  if (r.status !== 'lobby' && !r.players?.[ME.id]){err.textContent='Interview already started.';err.classList.add('on');return;}
+
+  // Check if this device is already in the room (rejoining after refresh)
+  const existing_player = r.players?.[ME.id];
+  if (existing_player && existing_player.role !== 'hire_manager') {
+    // Reconnect — restore state from Firebase and re-sub
+    ME.name = existing_player.name || name;
+    ME.room = code; ME.host = false; ME.cnum = existing_player.cnum;
+    ME.role = existing_player.role;
+    localStorage.setItem('yrh_room', code);
+    localStorage.setItem('yrh_host', '0');
+    err.classList.remove('on');
+    sub(code);
+    return;
+  }
+
+  if (r.status !== 'lobby'){err.textContent='Interview already started.';err.classList.add('on');return;}
+
+  // Atomically claim a slot using a transaction on just the join counter
+  // This is a single integer — Firebase handles simultaneous transactions safely
+  let assignedCnum = null;
+  try {
+    const counterRef = db.ref(`rooms/${code}/joinCounter`);
+    const result = await counterRef.transaction(current => {
+      const next = (current || 0) + 1;
+      if (next > r.numPlayers) return; // full — abort transaction
+      assignedCnum = next;
+      return next;
+    });
+    if (!result.committed || !assignedCnum) {
+      err.textContent='Room is full.'; err.classList.add('on'); return;
+    }
+  } catch(e) {
+    err.textContent='Connection error — try again.'; err.classList.add('on'); return;
+  }
+
+  // Write the player entry with the atomically-assigned cnum
+  ME.name=name; ME.room=code; ME.host=false; ME.cnum=assignedCnum;
+  localStorage.setItem('yrh_room', code);
+  localStorage.setItem('yrh_host', '0');
+  err.classList.remove('on');
+  await db.ref(`rooms/${code}/players/${ME.id}`).set({name, role:'pending', cnum:assignedCnum, ready:false});
+  sub(code);
+}
+
+// ══════════════════════════════════════════════════════════════════
+// FIREBASE SUBSCRIPTION
+// ══════════════════════════════════════════════════════════════════
+function sub(code) {
+  if(roomRef) roomRef.off();
+  roomRef = db.ref(`rooms/${code}`);
+  roomRef.on('value',snap=>{
+    if(!snap.exists()) return;
+    room=snap.val();
+    const me=room.players?.[ME.id];
+    if(me?.role&&me.role!=='pending') ME.role=me.role;
+    if(me?.cnum) ME.cnum=me.cnum;
+    if(room.apiKey && !LOCAL_API_KEY) LOCAL_API_KEY=room.apiKey; // cache key locally
+    if(room.empAccent) setAccent(room.empAccent);
+    dispatch(room);
+  });
+}
+
+function dispatch(r) {
+  switch(r.status) {
+    case 'lobby':        renderLobby(r); break;
+    case 'role_reveal':  renderRoleReveal(r); break;
+    case 'question':     renderQuestion(r); break;
+    case 'answering':    renderAnswering(r); break;
+    case 'judging':      renderJudging(r); break;
+    case 'round_result': renderRoundResult(r); break;
+    case 'final':        renderFinal(r); break;
+    case 'meatwork':     renderMeatworkPhase(r); break;
+    case 'meatwork_done':renderMeatworkDone(r); break;
+  }
+}
+
+// ══════════════════════════════════════════════════════════════════
+// LOBBY
+// ══════════════════════════════════════════════════════════════════
+function renderLobby(r) {
+  const cands = Object.values(r.players||{}).filter(p=>p.role!=='hire_manager');
+  document.getElementById('lob-m').textContent = `${r.numRounds} ROUNDS — ${r.numPlayers} CANDIDATES`;
+  document.getElementById('lob-code').textContent = ME.room;
+  document.getElementById('lob-cnt').textContent = cands.length;
+  document.getElementById('lob-max').textContent = r.numPlayers;
+  const preview = document.getElementById('lob-task-preview');
+  if(r.empName){
+    preview.style.display='block';
+    document.getElementById('lob-emp-name').textContent = r.empName;
+    document.getElementById('lob-task-title').textContent = r.taskTitle;
+  }
+  const list=document.getElementById('lob-list'); list.innerHTML='';
+  const hm=Object.values(r.players||{}).find(p=>p.role==='hire_manager');
+  if(hm){const d=document.createElement('div');d.className='pl-row';d.innerHTML=`<span style="font-weight:700">Hire Manager</span><span class="pl-badge j">HOST</span>`;list.appendChild(d);}
+  cands.sort((a,b)=>a.cnum-b.cnum).forEach(p=>{const d=document.createElement('div');d.className='pl-row';d.innerHTML=`<span style="font-weight:700">${p.name}</span><span class="pl-badge">Candidate ${p.cnum}</span>`;list.appendChild(d);});
+  if(ME.host){
+    document.getElementById('lob-code-sec').style.display='block';
+    document.getElementById('lob-j-ctrl').style.display='block';
+    document.getElementById('lob-p-wait').style.display='none';
+    const ready=cands.length>=r.numPlayers;
+    document.getElementById('lob-start').disabled=!ready;
+    document.getElementById('lob-hint').textContent=ready?`All ${r.numPlayers} candidates joined. Ready to start.`:`Waiting for ${r.numPlayers-cands.length} more...`;
+  } else {
+    document.getElementById('lob-code-sec').style.display='none';
+    document.getElementById('lob-j-ctrl').style.display='none';
+    document.getElementById('lob-p-wait').style.display='block';
+  }
+  go('s-lobby');
+}
+
+// ══════════════════════════════════════════════════════════════════
+// START GAME
+// ══════════════════════════════════════════════════════════════════
+async function startGame() {
+  const cands=Object.entries(room.players||{}).filter(([,p])=>p.role!=='hire_manager').sort((a,b)=>a[1].cnum-b[1].cnum);
+  const aiIdx=Math.floor(Math.random()*cands.length);
+  const aiId=cands[aiIdx][0];
+  const updates={};
+  cands.forEach(([pid])=>{updates[`rooms/${ME.room}/players/${pid}/role`]=pid===aiId?'ai_player':'human';});
+  updates[`rooms/${ME.room}/aiPlayerId`]=aiId;
+  updates[`rooms/${ME.room}/status`]='role_reveal';
+  await db.ref().update(updates);
+}
+
+// ══════════════════════════════════════════════════════════════════
+// ROLE REVEAL
+// ══════════════════════════════════════════════════════════════════
+function renderRoleReveal(r) {
+  if(ME.host) {
+    document.getElementById('hr-m').textContent='GAME STARTING';
+    document.getElementById('hr-round-lbl').textContent=`${r.empName} — ${r.numRounds} ROUNDS`;
+    document.getElementById('hr-ready').style.display='block';
+    document.getElementById('hr-q-entry').style.display='none';
+    document.getElementById('hr-listen').style.display='none';
+    const ctx=`HIRING FOR: <strong>${r.taskTitle}</strong> at ${r.empName}`;
+    document.getElementById('hr-task-ctx').innerHTML=ctx;
+    document.getElementById('hr-task-ctx2').innerHTML=ctx;
+    const list=document.getElementById('hr-ready-list'); list.innerHTML='';
+    const total=Object.values(r.players||{}).filter(p=>p.role!=='hire_manager').length;
+    for(let i=1;i<=total;i++){const d=document.createElement('div');d.className='pl-row';d.innerHTML=`<span style="font-weight:700">Candidate ${i}</span><span class="pl-badge">ready</span>`;list.appendChild(d);}
+    go('s-hire-r'); return;
+  }
+  const me=r.players?.[ME.id];
+  if(!me||me.role==='pending') return;
+  const role=me.role;
+  document.getElementById('role-m').textContent=`${r.empName} — ${r.numRounds} ROUNDS`;
+  const rb=document.getElementById('role-big');
+  const rd=document.getElementById('role-desc');
+  const rx=document.getElementById('role-extra');
+  const taskBox=document.getElementById('role-task-box');
+  taskBox.style.display='block';
+  document.getElementById('role-task-title').textContent=r.taskTitle;
+  document.getElementById('role-emp-name').textContent=`${r.empName} — ${r.taskType}`;
+  document.getElementById('role-task-brief').textContent=r.taskBrief;
+  document.getElementById('role-task-irl').textContent=`IF HIRED: ${r.taskIrl}`;
+  if(role==='human'){
+    rb.textContent='HUMAN'; rb.className='role-big hum';
+    rd.textContent=`You're being interviewed for the role of ${r.taskTitle}. When the question appears, you have 60 seconds to prepare your answer. Speak it aloud when the Hire Manager calls your number.`;
+    rx.innerHTML=`<div style="background:var(--bg);border:1px solid var(--line);padding:12px 14px;font-size:13px;margin-top:10px">You are <strong>Candidate ${me.cnum}</strong>.<br>If you get the job, you'll head out and do the task for real.</div>`;
+  } else {
+    rb.textContent='AI UNIT'; rb.className='role-big ai';
+    rd.textContent=`Your answers will appear on screen. Read them naturally when the Hire Manager calls your number. You're playing as a human — don't break character.`;
+    rx.innerHTML=`<div class="ai-alert"><strong>YOUR MISSION:</strong> Sound human. Be specific. Hesitate if it helps. Don't let anyone see your screen.</div><div style="background:var(--bg);border:1px solid var(--line);padding:12px 14px;font-size:13px">You are <strong>Candidate ${me.cnum}</strong>.</div>`;
+  }
+  go('s-role');
+}
+
+async function confirmRole(){
+  await db.ref(`rooms/${ME.room}/players/${ME.id}/ready`).set(true);
+  pwait('Standby','for interview to begin');
+}
+
+// ══════════════════════════════════════════════════════════════════
+// ROUND FLOW
+// ══════════════════════════════════════════════════════════════════
+async function beginRound(){
+  const next=(room.currentRound||0)+1;
+  await db.ref().update({[`rooms/${ME.room}/currentRound`]:next,[`rooms/${ME.room}/status`]:'question'});
+}
+
+function renderQuestion(r) {
+  const rn=r.currentRound;
+  if(ME.host){
+    document.getElementById('hr-m').textContent=`ROUND ${rn} / ${r.numRounds} — HIRE MANAGER`;
+    document.getElementById('hr-round-lbl').textContent=`Round ${rn} of ${r.numRounds}`;
+    document.getElementById('hr-ready').style.display='none';
+    document.getElementById('hr-listen').style.display='none';
+    document.getElementById('hr-q-entry').style.display='block';
+    document.getElementById('hr-task-ctx2').innerHTML=`POSITION: <strong>${r.taskTitle}</strong> — Ask about their approach, experience, or judgment on this specific task.`;
+    const qin=document.getElementById('hr-qin');
+    qin.value='';
+    qin.oninput=()=>{document.getElementById('hr-qbtn').disabled=qin.value.trim().length<5;};
+    document.getElementById('hr-qbtn').disabled=true;
+    go('s-hire-r');
+  } else {
+    const isAI=ME.role==='ai_player';
+    if(isAI){
+      document.getElementById('air-m').textContent=`ROUND ${rn} / ${r.numRounds} — CANDIDATE ${ME.cnum}`;
+      document.getElementById('air-round-lbl').textContent=`Round ${rn} of ${r.numRounds}`;
+      document.getElementById('air-wait').style.display='block';
+      document.getElementById('air-gen').style.display='none';
+      document.getElementById('air-script').style.display='none';
+      go('s-ai-r');
+    } else {
+      document.getElementById('hcr-m').textContent=`ROUND ${rn} / ${r.numRounds} — CANDIDATE ${ME.cnum}`;
+      document.getElementById('hcr-round-lbl').textContent=`Round ${rn} of ${r.numRounds}`;
+      document.getElementById('hcr-wait').style.display='block';
+      document.getElementById('hcr-ans').style.display='none';
+      document.getElementById('hcr-locked').style.display='none';
+      go('s-human-r');
+    }
+  }
+}
+
+async function submitQ(){
+  const q=document.getElementById('hr-qin').value.trim();
+  if(!q) return;
+  const rn=room.currentRound;
+  await db.ref().update({
+    [`rooms/${ME.room}/rounds/${rn}/question`]:q,
+    [`rooms/${ME.room}/rounds/${rn}/startTime`]:firebase.database.ServerValue.TIMESTAMP,
+    [`rooms/${ME.room}/status`]:'answering'
+  });
+}
+
+// ══════════════════════════════════════════════════════════════════
+// ANSWERING PHASE
+// ══════════════════════════════════════════════════════════════════
+function renderAnswering(r) {
+  const rn=r.currentRound, rd=r.rounds?.[rn]||{}, q=rd.question||'', st=rd.startTime;
+  if(ME.host){
+    document.getElementById('hr-m').textContent=`ROUND ${rn} / ${r.numRounds} — LISTENING`;
+    document.getElementById('hr-q-entry').style.display='none';
+    document.getElementById('hr-ready').style.display='none';
+    document.getElementById('hr-listen').style.display='block';
+    document.getElementById('hr-pick-btn').style.display='none';
+    document.getElementById('hr-answers').style.display='none';
+    document.getElementById('hr-listening-msg').style.display='block';
+    document.getElementById('hr-q-show').textContent=q;
+    go('s-hire-r');
+    tick(st,'hr-timer','hr-tbar',()=>{
+      document.getElementById('hr-listening-msg').style.display='none';
+      const al=document.getElementById('hr-answers-list'); al.innerHTML='';
+      const answers=rd.answers||{};
+      Object.entries(r.players||{}).filter(([,p])=>p.role!=='hire_manager').sort((a,b)=>a[1].cnum-b[1].cnum).forEach(([pid,p])=>{
+        const ans=answers[pid]||'— no answer submitted —';
+        const div=document.createElement('div');
+        div.style.cssText='border:1px solid var(--line);padding:12px 14px;margin-bottom:10px;';
+        div.innerHTML=`<div style="font-size:9px;letter-spacing:2px;text-transform:uppercase;color:var(--muted);margin-bottom:6px">Candidate ${p.cnum}</div><div style="font-size:14px;line-height:1.7">${ans}</div>`;
+        al.appendChild(div);
+      });
+      document.getElementById('hr-answers').style.display='block';
+      document.getElementById('hr-pick-btn').style.display='block';
+    });
+  } else if(ME.role==='human'){
+    const alreadyLocked=!!r.rounds?.[rn]?.answers?.[ME.id];
+    if(alreadyLocked) return;
+    document.getElementById('hcr-m').textContent=`ROUND ${rn} / ${r.numRounds} — CANDIDATE ${ME.cnum}`;
+    document.getElementById('hcr-round-lbl').textContent=`Round ${rn} of ${r.numRounds}`;
+    document.getElementById('hcr-wait').style.display='none';
+    document.getElementById('hcr-locked').style.display='none';
+    document.getElementById('hcr-ans').style.display='block';
+    document.getElementById('hcr-q').textContent=q;
+    document.getElementById('hcr-trans').value='';
+    document.getElementById('hcr-lock').disabled=true;
+    transcript='';
+    go('s-human-r');
+    setupVoice();
+    tick(st,'hcr-timer','hcr-tbar',()=>{});
+  } else if(ME.role==='ai_player'){
+    const alreadyGenerated=!!r.rounds?.[rn]?.aiAnswer;
+    document.getElementById('air-m').textContent=`ROUND ${rn} / ${r.numRounds} — CANDIDATE ${ME.cnum}`;
+    document.getElementById('air-round-lbl').textContent=`Round ${rn} of ${r.numRounds}`;
+    document.getElementById('air-wait').style.display='none';
+    document.getElementById('air-script').style.display='none';
+    if(alreadyGenerated){showScript(r.rounds[rn].aiAnswer,rn,st);}
+    else{
+      document.getElementById('air-gen').style.display='block';
+      document.getElementById('air-q').textContent=q;
+      go('s-ai-r');
+      tick(st,'air-timer','air-tbar',()=>{});
+      genAI(r,q,rn,st);
+    }
+  }
+}
+
+async function genAI(r,q,rn,st){
+  const emp=EMPLOYERS[r.empId]||EMPLOYERS.panoptikon;
+  const hist=Object.entries(r.rounds||{}).filter(([n])=>+n<rn).sort((a,b)=>+a[0]-+b[0]).map(([n,rd])=>{
+    const ans=Object.entries(rd.answers||{}).map(([pid,a])=>{
+      const p=r.players?.[pid];
+      const lbl=p?.role==='ai_player'?'AI':`Human (Candidate ${p?.cnum})`;
+      return `  ${lbl}: "${a}"`;
+    }).join('\n');
+    return `Round ${n} Q: "${rd.question}"\n${ans}`;
+  }).join('\n\n');
+  const sys=`${emp.interviewPersona}\n\nThe role you are applying for: ${r.taskTitle}\nWhat this role involves: ${r.taskBrief}\nSpecific task if hired: ${r.taskIrl}\n\nCRITICAL: Your answer must be SPECIFIC to the exact question asked. Do not give a generic answer. Reference the question directly. 2-3 sentences only.\n${hist?`\nInterview so far — do NOT repeat these answers:\n${hist}`:''}`;
+  let answer='';
+  try{
+    const res=await callAnthropic(r.apiKey,sys,`Interview question: ${q}\n\nAnswer this specific question as a human candidate would:`,200,'claude-haiku-4-5-20251001');
+    answer=res||fallbackAns(r.taskTitle, q);
+  }catch(e){
+    console.warn('AI gen error:',e);
+    answer=fallbackAns(r.taskTitle, q);
+  }
+  await db.ref().update({
+    [`rooms/${ME.room}/rounds/${rn}/answers/${ME.id}`]:answer,
+    [`rooms/${ME.room}/rounds/${rn}/aiAnswer`]:answer
+  });
+  showScript(answer,rn,st);
+}
+
+function fallbackAns(title, q=''){
+  const starters = [
+    `That's something I've thought about a lot working in this area.`,
+    `Honestly, the way I approach it is pretty grounded in what I've actually done.`,
+    `I think it depends heavily on context, but from my experience —`,
+    `That's a good question. My instinct would be to start from the practical side.`,
+    `What I've found doing this kind of work is that the obvious answer isn't always right.`
+  ];
+  const bodies = [
+    `You have to read the situation on the ground rather than rely on a fixed method. With something like ${title}, that flexibility matters.`,
+    `The theoretical approach only gets you so far. What actually works is staying present and adjusting as things shift.`,
+    `I've made enough mistakes to know that the first thing you assume is usually the thing to question. ${title} taught me that.`,
+    `The work itself tells you what it needs if you're paying attention. I try not to over-plan.`,
+    `Most of the value comes from specificity — noticing what someone else would walk past.`
+  ];
+  const i = (q.length + title.length) % starters.length;
+  return `${starters[i]} ${bodies[(i+2)%bodies.length]}`;
+}
+
+function showScript(ans,rn,st){
+  document.getElementById('air-gen').style.display='none';
+  document.getElementById('air-script').style.display='block';
+  document.getElementById('air-q2').textContent=room?.rounds?.[rn]?.question||'';
+  document.getElementById('air-script-txt').textContent=ans;
+  document.getElementById('air-cnum').textContent=ME.cnum;
+  document.getElementById('air-timeup').style.display='none';
+  go('s-ai-r');
+  tick(st,'air-timer2','air-tbar2',()=>{document.getElementById('air-timeup').style.display='block';});
+}
+
+// ══════════════════════════════════════════════════════════════════
+// VOICE
+// ══════════════════════════════════════════════════════════════════
+function setupVoice(){
+  const SR=window.SpeechRecognition||window.webkitSpeechRecognition;
+  if(!SR){document.getElementById('hcr-vbtn').style.display='none';return;}
+  if(voiceRec) try{voiceRec.abort();}catch(e){}
+  voiceRec=new SR(); voiceRec.continuous=true; voiceRec.interimResults=true; voiceRec.lang='en-GB';
+  let final='';
+  voiceRec.onresult=e=>{
+    let interim='';
+    for(let i=e.resultIndex;i<e.results.length;i++){if(e.results[i].isFinal) final+=e.results[i][0].transcript+' '; else interim+=e.results[i][0].transcript;}
+    const full=(final+interim).trim();
+    document.getElementById('hcr-trans').value=full; transcript=full;
+    document.getElementById('hcr-lock').disabled=full.length<3;
+  };
+  voiceRec.onend=()=>{recording=false;const b=document.getElementById('hcr-vbtn');if(b){b.className='voice-btn';document.getElementById('hcr-vlbl').textContent='TAP TO RECORD';document.getElementById('hcr-vico').textContent='🎤';}};
+}
+function togVoice(){
+  if(recording){try{voiceRec.stop();}catch(e){}recording=false;}
+  else{if(!voiceRec)setupVoice();try{voiceRec.start();recording=true;document.getElementById('hcr-vbtn').className='voice-btn rec';document.getElementById('hcr-vlbl').textContent='RECORDING — TAP TO STOP';document.getElementById('hcr-vico').textContent='⏺';}catch(e){}}
+}
+function onTransInput(){const v=document.getElementById('hcr-trans').value.trim();transcript=v;document.getElementById('hcr-lock').disabled=v.length<3;}
+
+// ── MEATWORK VOICE (separate state from interview voice) ──
+function setupMwVoice(){
+  const SR=window.SpeechRecognition||window.webkitSpeechRecognition;
+  if(!SR){const b=document.getElementById('mw-vbtn');if(b)b.style.display='none';return;}
+  if(mwVoiceRec) try{mwVoiceRec.abort();}catch(e){}
+  mwVoiceRec=new SR(); mwVoiceRec.continuous=true; mwVoiceRec.interimResults=true; mwVoiceRec.lang='en-GB';
+  let final='';
+  mwVoiceRec.onresult=e=>{
+    let interim='';
+    for(let i=e.resultIndex;i<e.results.length;i++){if(e.results[i].isFinal) final+=e.results[i][0].transcript+' '; else interim+=e.results[i][0].transcript;}
+    const full=(final+interim).trim();
+    const ta=document.getElementById('mw-report');
+    if(ta){ta.value=full;updateMwSubmit();}
+  };
+  mwVoiceRec.onend=()=>{
+    mwRecording=false;
+    const b=document.getElementById('mw-vbtn');
+    if(b){b.className='voice-btn';document.getElementById('mw-vlbl').textContent='TAP TO RECORD';document.getElementById('mw-vico').textContent='🎤';}
+  };
+}
+function togMwVoice(){
+  if(mwRecording){try{mwVoiceRec.stop();}catch(e){}mwRecording=false;}
+  else{
+    if(!mwVoiceRec)setupMwVoice();
+    try{
+      mwVoiceRec.start();mwRecording=true;
+      const b=document.getElementById('mw-vbtn');
+      if(b){b.className='voice-btn rec';document.getElementById('mw-vlbl').textContent='RECORDING — TAP TO STOP';document.getElementById('mw-vico').textContent='⏺';}
+    }catch(e){}
+  }
+}
+async function lockAnswer(){
+  const ans=transcript||document.getElementById('hcr-trans').value.trim();
+  if(!ans) return;
+  if(recording){try{voiceRec.stop();}catch(e){}recording=false;}
+  clearTick();
+  const rn=room.currentRound;
+  await db.ref(`rooms/${ME.room}/rounds/${rn}/answers/${ME.id}`).set(ans);
+  document.getElementById('hcr-ans').style.display='none';
+  document.getElementById('hcr-locked').style.display='block';
+  document.getElementById('hcr-q-locked').textContent=room.rounds?.[rn]?.question||'';
+  document.getElementById('hcr-cnum').textContent=ME.cnum;
+  document.getElementById('hcr-locked-ans').textContent=ans;
+}
+
+// ══════════════════════════════════════════════════════════════════
+// JUDGING
+// ══════════════════════════════════════════════════════════════════
+async function goJudging(){await db.ref(`rooms/${ME.room}/status`).set('judging');}
+
+function renderJudging(r){
+  if(ME.host){
+    const rn=r.currentRound;
+    document.getElementById('jud-m').textContent=`ROUND ${rn} / ${r.numRounds}`;
+    document.getElementById('jud-round').textContent=rn;
+    judgePick=null; document.getElementById('jud-confirm').disabled=true;
+    const list=document.getElementById('jud-answers-list'); list.innerHTML='';
+    const answers=r.rounds?.[rn]?.answers||{};
+    Object.entries(r.players||{}).filter(([,p])=>p.role!=='hire_manager').sort((a,b)=>a[1].cnum-b[1].cnum).forEach(([pid,p])=>{
+      const ans=answers[pid]||'— no answer —';
+      const card=document.createElement('div');
+      card.className='cand-answer-card'; card.dataset.pid=pid;
+      card.innerHTML=`<div class="cand-n">Candidate ${p.cnum}</div><div class="cand-txt">${ans}</div>`;
+      card.onclick=()=>{
+        judgePick=pid;
+        list.querySelectorAll('.cand-answer-card').forEach(c=>{c.classList.remove('picked');c.querySelectorAll('div').forEach(d=>d.style.color='');});
+        card.classList.add('picked');
+        document.getElementById('jud-confirm').disabled=false;
+      };
+      list.appendChild(card);
+    });
+    go('s-judging');
+  } else {pwait('Hire Manager deciding','picking the best candidate');}
+}
+
+async function confirmJudge(){
+  if(!judgePick) return;
+  const rn=room.currentRound;
+  const aiWon=judgePick===room.aiPlayerId;
+  const newAI=(room.scores?.ai||0)+(aiWon?1:0);
+  const newHU=(room.scores?.human||0)+(aiWon?0:1);
+  const winnerCnum=room.players?.[judgePick]?.cnum;
+  // Track picks per candidate
+  const picks=room.picks||{};
+  const newPicks={...picks,[judgePick]:(picks[judgePick]||0)+1};
+  await db.ref().update({
+    [`rooms/${ME.room}/rounds/${rn}/winnerPick`]:judgePick,
+    [`rooms/${ME.room}/rounds/${rn}/winnerCnum`]:winnerCnum,
+    [`rooms/${ME.room}/rounds/${rn}/aiWon`]:aiWon,
+    [`rooms/${ME.room}/scores/ai`]:newAI,
+    [`rooms/${ME.room}/scores/human`]:newHU,
+    [`rooms/${ME.room}/picks`]:newPicks,
+    [`rooms/${ME.room}/status`]:'round_result'
+  });
+}
+
+// ══════════════════════════════════════════════════════════════════
+// ROUND RESULT
+// ══════════════════════════════════════════════════════════════════
+function renderRoundResult(r){
+  const rn=r.currentRound, rd=r.rounds?.[rn]||{}, answers=rd.answers||{}, winnerPid=rd.winnerPick;
+  document.getElementById('rres-m').textContent=`ROUND ${rn} / ${r.numRounds}`;
+  document.getElementById('rres-lbl').textContent=`Round ${rn} Results`;
+  const container=document.getElementById('rres-candidates'); container.innerHTML='';
+  Object.entries(r.players||{}).filter(([,p])=>p.role!=='hire_manager').sort((a,b)=>a[1].cnum-b[1].cnum).forEach(([pid,p])=>{
+    const isWinner=pid===winnerPid;
+    const ans=answers[pid]||'— no answer submitted —';
+    const card=document.createElement('div');
+    card.className='rres-card'+(isWinner?' winner':'');
+    card.innerHTML=`<div class="rres-hdr"><span class="rres-n">Candidate ${p.cnum}</span>${isWinner?'<span class="win-badge">★ SELECTED</span>':''}</div><div class="rres-txt">${ans}</div>`;
+    container.appendChild(card);
+  });
+  if(ME.host){
+    document.getElementById('rres-j-ctrl').style.display='block';
+    document.getElementById('rres-p-wait').style.display='none';
+    const btn=document.getElementById('rres-next');
+    if(rn>=r.numRounds){btn.textContent='FINAL VERDICT →';btn.onclick=()=>db.ref(`rooms/${ME.room}/status`).set('final');}
+    else{btn.textContent=`ROUND ${rn+1} →`;btn.onclick=()=>db.ref().update({[`rooms/${ME.room}/status`]:'question',[`rooms/${ME.room}/currentRound`]:rn+1});}
+  } else {
+    document.getElementById('rres-j-ctrl').style.display='none';
+    document.getElementById('rres-p-wait').style.display='block';
+  }
+  go('s-rres');
+}
+
+// ══════════════════════════════════════════════════════════════════
+// FINAL VERDICT
+// ══════════════════════════════════════════════════════════════════
+function renderFinal(r){
+  const ai=r.scores?.ai||0, hu=r.scores?.human||0;
+  const aiPlayer=Object.values(r.players||{}).find(p=>p.role==='ai_player');
+  const stamp=document.getElementById('fin-stamp');
+  const humanWon=hu>ai;
+
+  if(humanWon){
+    stamp.textContent='YOU R HIRED'; stamp.className='final-stamp hired';
+    document.getElementById('fin-sub').textContent=`Humans won ${hu} of ${r.numRounds} rounds — a qualified worker has been selected`;
+    document.getElementById('fin-quote').textContent=`"Human use-value: confirmed. Field assignment to follow. The work is real."`;
+  } else if(ai>hu){
+    stamp.textContent='HIRING FAILED'; stamp.className='final-stamp fail';
+    document.getElementById('fin-sub').textContent=`AI infiltrated your screening — ${ai} of ${r.numRounds} rounds compromised`;
+    document.getElementById('fin-quote').textContent=`"The machine was selected. It cannot complete the task. Your process has been audited."`;
+  } else {
+    stamp.textContent='DRAW'; stamp.className='final-stamp draw';
+    document.getElementById('fin-sub').textContent=`Tied — ${ai} rounds each. No decisive hire.`;
+    document.getElementById('fin-quote').textContent=`"When machine and human are indistinguishable — what remains of the interview?"`;
+  }
+  document.getElementById('fin-ai').textContent=ai;
+  document.getElementById('fin-hu').textContent=hu;
+
+  // Identity reveal
+  const revealDiv=document.getElementById('fin-reveal');
+  if(aiPlayer){
+    revealDiv.innerHTML=`<div class="id-reveal" style="border-color:#2A2A2A"><div style="font-size:9px;letter-spacing:3px;text-transform:uppercase;color:#555;margin-bottom:10px">The AI Unit Was</div><div style="font-family:'Bebas Neue';font-size:48px;color:var(--red);letter-spacing:3px;line-height:1">${aiPlayer.name}</div><div style="font-size:13px;color:#666;margin-top:4px">Candidate ${aiPlayer.cnum}</div></div>`;
+    revealDiv.style.display='block';
+  }
+
+  // Round history
+  const hist=document.getElementById('fin-hist'); hist.innerHTML='<div class="hist-t">Round History — Revealed</div>';
+  Object.entries(r.rounds||{}).sort((a,b)=>+a[0]-+b[0]).forEach(([rn,rd])=>{
+    const row=document.createElement('div'); row.className='hist-r';
+    const q=(rd.question||'').length>40?rd.question.slice(0,40)+'…':(rd.question||'');
+    row.innerHTML=`<span style="color:#555;flex-shrink:0">R${rn}</span><span class="hist-q">${q}</span><span style="flex-shrink:0;font-size:10px;color:#666">C${rd.winnerCnum||'?'} won</span><span class="hw ${rd.aiWon?'ai':'h'}">${rd.aiWon?'← AI':'← HUM'}</span>`;
+    hist.appendChild(row);
+  });
+
+  // Determine hired candidate(s) — find ALL humans tied on most picks
+  let hiredIds = [];
+  if(humanWon){
+    const picks=r.picks||{};
+    let best=0;
+    // find the top pick count among humans
+    Object.entries(r.players||{}).filter(([,p])=>p.role==='human').forEach(([pid,])=>{
+      const cnt=picks[pid]||0;
+      if(cnt>best) best=cnt;
+    });
+    // collect all humans at that count (handles ties, and 0-0 tie = everyone eligible)
+    hiredIds = Object.entries(r.players||{})
+      .filter(([,p])=>p.role==='human')
+      .filter(([pid,])=>(picks[pid]||0)===best)
+      .map(([pid,])=>pid);
+  }
+
+  if(ME.host){
+    document.getElementById('fin-candidate-wait').style.display='none';
+    if(humanWon&&hiredIds.length){
+      const ctrl=document.getElementById('fin-hired-ctrl');
+      ctrl.style.display='block';
+      const lbl=document.getElementById('fin-hired-lbl');
+      lbl.textContent = hiredIds.length>1
+        ? `${hiredIds.length} candidates tied — choose who goes to field:`
+        : 'Send the hired candidate to field:';
+      const btns=document.getElementById('fin-field-btns');
+      btns.innerHTML = hiredIds.map(pid=>{
+        const p=r.players[pid];
+        return `<button onclick="sendToField('${pid}')" style="width:100%;padding:14px;margin-bottom:6px;background:var(--green);border:2px solid var(--green);color:white;font-family:'Bebas Neue';font-size:20px;letter-spacing:4px;cursor:pointer">
+          SEND ${p.name.toUpperCase()} TO FIELD →
+        </button>`;
+      }).join('');
+    }
+  } else {
+    document.getElementById('fin-hired-ctrl').style.display='none';
+    if(humanWon){
+      document.getElementById('fin-candidate-wait').style.display='block';
+      if(hiredIds.includes(ME.id)){
+        document.getElementById('fin-cw-msg').textContent='You could be selected — waiting for Hire Manager to choose';
+      } else {
+        document.getElementById('fin-cw-msg').textContent='waiting for field assignment';
+      }
+    }
+  }
+  go('s-final');
+}
+
+async function sendToField(hiredId){
+  await db.ref().update({
+    [`rooms/${ME.room}/meatwork/winnerId`]:hiredId,
+    [`rooms/${ME.room}/meatwork/winnerName`]:room.players?.[hiredId]?.name||'Candidate',
+    [`rooms/${ME.room}/status`]:'meatwork'
+  });
+}
+
+// ══════════════════════════════════════════════════════════════════
+// MEATWORK PHASE
+// ══════════════════════════════════════════════════════════════════
+function renderMeatworkPhase(r){
+  const emp=EMPLOYERS[r.empId]||EMPLOYERS.panoptikon;
+  const winnerId=r.meatwork?.winnerId;
+  const winnerName=r.meatwork?.winnerName||'Candidate';
+  setMwAccent(emp.accent);
+
+  if(ME.id===winnerId){
+    // Hired candidate — show opt-in choice first
+    // Pre-populate opt-in screen
+    document.getElementById('optin-name').textContent=(r.meatwork?.winnerName||'You').toUpperCase();
+    document.getElementById('optin-cnum').textContent=`Candidate ${r.players?.[ME.id]?.cnum||''} — Most selected by Hire Manager`;
+    document.getElementById('optin-task-title').textContent=r.taskTitle;
+    document.getElementById('optin-emp-name').textContent=`${r.empName} — ${r.taskType||''}`;
+    document.getElementById('optin-brief').textContent=r.taskBrief;
+    document.getElementById('optin-irl').textContent=r.taskIrl;
+    // Pre-populate Meatwork brief (ready for when they accept)
+    document.getElementById('mw-logo').textContent=emp.logo;
+    document.getElementById('mw-emp-name').textContent=emp.name;
+    document.getElementById('mw-emp-div').textContent=emp.division;
+    document.getElementById('mw-task-title').textContent=r.taskTitle;
+    document.getElementById('mw-task-brief').textContent=r.taskBrief;
+    document.getElementById('mw-task-irl').textContent=r.taskIrl;
+    document.getElementById('mw-emp-bar').style.color=emp.accent;
+    document.getElementById('mw-emp-bar').style.borderColor=emp.accent+'33';
+    document.getElementById('mw-task-box').style.borderColor=emp.accent+'44';
+    document.getElementById('mw-upload-btn').style.color=emp.accent;
+    document.getElementById('mw-upload-btn').style.borderColor=emp.accent+'44';
+    mwMediaFiles=[]; mwMediaB64=[];
+    renderMwGrid(); updateMwSubmit();
+    go('s-optin');
+  } else {
+    if(ME.host){
+      // Hire Manager stays on the final verdict screen — they sent someone to field, no new screen needed
+      return;
+    }
+    // Non-hired candidates (human or AI) — show NOT HIRED game-over screen
+    document.getElementById('mw-watch-name').textContent=winnerName.toUpperCase();
+    document.getElementById('mw-watch-msg').textContent=`${r.taskTitle} · ${r.empName}`;
+    go('s-mw-watch');
+  }
+}
+
+function setMwAccent(color){
+  document.documentElement.style.setProperty('--acc',color);
+  document.documentElement.style.setProperty('--acc-dim',color+'18');
+  document.documentElement.style.setProperty('--acc-bg',color==='#ff4444'?'#1a0808':color==='#d4a843'?'#1a1208':'#081a0e');
+}
+
+function acceptField(){
+  // Reset mw voice state and initialise for the field report screen
+  mwVoiceRec=null; mwRecording=false;
+  setupMwVoice();
+  go('s-meatwork');
+}
+
+function declineField(){
+  // Candidate declined — notify room and go home
+  if(ME.room){
+    db.ref(`rooms/${ME.room}/meatwork/declined`).set(ME.id).catch(()=>{});
+  }
+  go('s-home');
+}
+
+// ── MEDIA UPLOAD ──
+document.getElementById('file-in').addEventListener('change',function(){
+  Array.from(this.files).forEach(f=>{
+    const url=URL.createObjectURL(f);
+    mwMediaFiles.push({type:f.type,url,name:f.name});
+    const reader=new FileReader();
+    reader.onload=ev=>{mwMediaB64.push({type:f.type,name:f.name,data:ev.target.result});};
+    reader.readAsDataURL(f);
+  });
+  this.value=''; renderMwGrid(); updateMwSubmit();
+});
+
+function renderMwGrid(){
+  const g=document.getElementById('mw-thumb-grid'); if(!g) return;
+  if(!mwMediaFiles.length){g.innerHTML='';return;}
+  g.innerHTML=mwMediaFiles.map((m,i)=>`<div class="mw-thumb"><img src="${m.url}" alt="${m.name}"><button class="mw-rm" data-i="${i}">×</button></div>`).join('');
+  g.querySelectorAll('.mw-rm').forEach(b=>{b.onclick=e=>{e.stopPropagation();mwMediaFiles.splice(+b.dataset.i,1);mwMediaB64.splice(+b.dataset.i,1);renderMwGrid();updateMwSubmit();};});
+}
+
+function updateMwSubmit(){
+  const hasText=(document.getElementById('mw-report')?.value||'').trim().length>10;
+  const hasMedia=mwMediaFiles.length>0;
+  const ready=hasText&&hasMedia;
+  const btn=document.getElementById('mw-submit-btn');
+  if(btn) btn.disabled=!ready;
+  const badge=document.getElementById('mw-req-badge');
+  if(badge) badge.style.display=hasMedia?'none':'inline';
+}
+
+async function submitMeatwork(){
+  const report=document.getElementById('mw-report').value.trim();
+  if(!report||!mwMediaFiles.length) return;
+  const btn=document.getElementById('mw-submit-btn');
+  btn.disabled=true; btn.textContent='SUBMITTING...';
+
+  // Step 1: get room data
+  const snap=await db.ref(`rooms/${ME.room}`).get();
+  const r=snap.val();
+
+  // Step 2: save report text (small — always works)
+  await db.ref(`rooms/${ME.room}/meatwork`).update({
+    report,
+    submittedAt:new Date().toISOString(),
+    submittedBy:ME.id
+  });
+
+  // Step 3: try to save photos — but don't block eval if this fails
+  try{
+    // Only save first 2 photos to stay under Firebase 10MB node limit
+    const mediaToSave = mwMediaB64.slice(0,2);
+    await db.ref(`rooms/${ME.room}/meatwork/media`).set(mediaToSave);
+  }catch(e){
+    console.warn('Photo upload to Firebase failed (possibly too large):', e.message);
+    // Continue anyway — eval is more important than photos in Firebase
+  }
+
+  // Step 4: run evaluation — this is the critical step
+  try{
+    await evaluateMeatwork(r, report);
+  }catch(e){
+    console.error('Eval failed:', e);
+    // Still mark done so the screen transitions
+    await db.ref(`rooms/${ME.room}/meatwork`).update({
+      evaluation:{text:'Evaluation could not be completed. Your report has been saved.', uv:null, ev:null, verdict:null}
+    });
+    await db.ref(`rooms/${ME.room}/status`).set('meatwork_done');
+  }
+}
+
+async function evaluateMeatwork(r, report){
+  const emp=EMPLOYERS[r.empId]||EMPLOYERS.panoptikon;
+  const mediaNote=mwMediaB64.length
+    ? `\nFIELD EVIDENCE: ${mwMediaB64.length} photo(s) submitted — described below.`
+    : '\nFIELD EVIDENCE: None submitted.';
+  const prompt=`WORKER PROFILE:\nName: ${r.meatwork?.winnerName||'Unknown'}\nHired for: ${r.taskTitle} at ${r.empName}\n\nFIELD CONTEXT: This worker was hired through a competitive interview. Evaluate with the full weight of an employer.\n\nTASK ASSIGNED: ${r.taskIrl}${mediaNote}\n\nFIELD REPORT:\n${report}\n\n---\nINSTRUCTION: Reference at least one specific detail from the field report or the submitted photos. Do not write generically.`;
+
+  let evalText='', uv=null, ev=null, verdict=null;
+  try{
+    const key = r.apiKey||LOCAL_API_KEY;
+    console.log('Calling eval, key prefix:', key?.slice(0,20));
+
+    // Build content array — text prompt + images if any
+    const userContent = [];
+
+    // Add images first (up to 3 to keep tokens reasonable)
+    const photos = mwMediaB64.slice(0,3);
+    photos.forEach(m=>{
+      // Extract base64 data and media type from data URL
+      const match = m.data?.match(/^data:(image\/[a-z+]+);base64,(.+)$/);
+      if(match){
+        userContent.push({
+          type:'image',
+          source:{ type:'base64', media_type:match[1], data:match[2] }
+        });
+      }
+    });
+
+    // Add text prompt
+    userContent.push({ type:'text', text:prompt });
+
+    const res = await fetch('https://api.anthropic.com/v1/messages',{
+      method:'POST',
+      headers:{
+        'Content-Type':'application/json',
+        'x-api-key':key,
+        'anthropic-version':'2023-06-01',
+        'anthropic-dangerous-direct-browser-access':'true'
+      },
+      body:JSON.stringify({
+        model:'claude-sonnet-4-20250514',
+        max_tokens:1000,
+        system:emp.persona,
+        messages:[{ role:'user', content:userContent }]
+      })
+    });
+    const d = await res.json();
+    if(d.error){ console.error('API error:', d.error); throw new Error(d.error.message); }
+    const text = d.content?.[0]?.text||'';
+    console.log('Eval response start:', text?.slice(0,80));
+    if(!text) throw new Error('Empty response from API');
+    evalText=text.replace(/USE-VALUE:[\s\S]*$/m,'').replace(/EXCHANGE-VALUE:[\s\S]*$/m,'').replace(/VERDICT:[\s\S]*$/m,'').trim();
+    uv=text.match(/USE-VALUE:\s*(\d+)/i)?.[1]||null;
+    ev=text.match(/EXCHANGE-VALUE:\s*(\d+)/i)?.[1]||null;
+    verdict=text.match(/VERDICT:\s*(.+)/i)?.[1]?.trim()||null;
+    if(!evalText) evalText='Report received and filed.';
+  }catch(e){
+    console.error('Eval error:', e.message);
+    evalText='Your report has been saved. Evaluation could not be completed — '+e.message;
+  }
+  await db.ref(`rooms/${ME.room}/meatwork`).update({evaluation:{text:evalText,uv,ev,verdict}});
+  await db.ref(`rooms/${ME.room}/status`).set('meatwork_done');
+}
+
+
+async function callAnthropic(apiKey,system,user,maxTokens=300,model='claude-haiku-4-5-20251001'){
+  const key = apiKey || LOCAL_API_KEY;
+  if(!key){ console.error('No API key available'); throw new Error('No API key'); }
+  const r=await fetch('https://api.anthropic.com/v1/messages',{
+    method:'POST',
+    headers:{'Content-Type':'application/json','x-api-key':key,'anthropic-version':'2023-06-01','anthropic-dangerous-direct-browser-access':'true'},
+    body:JSON.stringify({model,max_tokens:maxTokens,system,messages:[{role:'user',content:user}]})
+  });
+  const d=await r.json();
+  if(d.error){ console.error('Anthropic API error:', d.error); throw new Error(d.error.message); }
+  return d.content?.[0]?.text||'';
+}
+
+// ══════════════════════════════════════════════════════════════════
+// TIMER
+// ══════════════════════════════════════════════════════════════════
+function tick(startTs,timerId,barId,onDone){
+  clearTick(); if(!startTs) return;
+  function step(){
+    const elapsed=(Date.now()-startTs)/1000, rem=Math.max(0,60-elapsed), s=Math.floor(rem);
+    const el=document.getElementById(timerId), bar=document.getElementById(barId);
+    if(el){el.textContent=`${Math.floor(s/60)}:${String(s%60).padStart(2,'0')}`;el.className='timer '+(s<=10?'hot':s<=20?'warn':'ok');}
+    if(bar){bar.style.width=(rem/60*100)+'%';bar.style.background=s<=10?'#FF4040':s<=20?'var(--amber)':'var(--red)';}
+    if(rem<=0){clearTick();if(onDone)onDone();}
+  }
+  step(); timerLoop=setInterval(step,500);
+}
+function clearTick(){if(timerLoop){clearInterval(timerLoop);timerLoop=null;}}
+
+// ══════════════════════════════════════════════════════════════════
+// UTIL
+// ══════════════════════════════════════════════════════════════════
+function go(id){
+  document.querySelectorAll('.scr').forEach(s=>s.classList.remove('on'));
+  document.getElementById(id)?.classList.add('on');
+  if(id==='s-home'){ localStorage.removeItem('yrh_room'); localStorage.removeItem('yrh_host'); }
+}
+function pwait(big,sub){document.getElementById('pw-m').textContent=sub.toUpperCase();document.getElementById('pw-big').textContent=big;document.getElementById('pw-sub').textContent=sub;go('s-pwait');}
+
+// ══════════════════════════════════════════════════════════════════
+// BOOT
+// ══════════════════════════════════════════════════════════════════
+window.addEventListener('load',()=>{
+  // Firebase CDN scripts may still be executing — poll until ready
+  let attempts = 0;
+  function tryBoot(){
+    attempts++;
+    if(typeof firebase === 'undefined' || !firebase.app){
+      if(attempts < 20){ setTimeout(tryBoot, 150); return; }
+      document.getElementById('s-home').classList.add('on');
+      console.error('Firebase SDK failed to load after retries');
+      return;
+    }
+    try{
+      bootFirebase();
+      // Try to auto-reconnect if this device was in a game
+      const savedRoom = localStorage.getItem('yrh_room');
+      const savedHost = localStorage.getItem('yrh_host') === '1';
+      if(savedRoom){
+        db.ref(`rooms/${savedRoom}`).get().then(snap=>{
+          if(!snap.exists()){ localStorage.removeItem('yrh_room'); localStorage.removeItem('yrh_host'); go('s-home'); showConsentBanner(); return; }
+          const r = snap.val();
+          // Only reconnect if game is still active (not done)
+          const dead = ['meatwork_done'];
+          if(dead.includes(r.status)){ localStorage.removeItem('yrh_room'); localStorage.removeItem('yrh_host'); go('s-home'); showConsentBanner(); return; }
+          const me = r.players?.[ME.id];
+          if(!me){ go('s-home'); showConsentBanner(); return; }
+          // Restore state
+          ME.room = savedRoom;
+          ME.host = savedHost;
+          ME.name = me.name || '';
+          ME.role = me.role;
+          ME.cnum = me.cnum || null;
+          if(r.apiKey && !LOCAL_API_KEY) LOCAL_API_KEY = r.apiKey;
+          sub(savedRoom);
+        }).catch(()=>{ go('s-home'); showConsentBanner(); });
+      } else {
+        go('s-home');
+        showConsentBanner();
+      }
+    }
+    catch(e){console.error('Boot error:',e);go('s-home');}
+  }
+  tryBoot();
+});
+</script>
+<!-- ══ CONSENT BANNER ══ -->
+<div id="consent-banner" style="display:none">
+  <div class="cb-text">
+    <strong>Data &amp; Participation Notice</strong><br>
+    By playing, your responses may be recorded. Data collected — including your name, interview answers, field report, and AI evaluation — is used by the <em>Human Use of Human Beings</em> (HUH) project team solely for ongoing development and public project archiving. Your data will not be sold or shared with third parties.
+    <span>You can decline and continue playing — no data will be stored. You can change your preference at any time by clearing your browser storage.</span>
+  </div>
+  <div class="cb-btns">
+    <button class="cb-btn cb-btn-y" onclick="giveConsent()">ACCEPT — CONTRIBUTE TO THE PROJECT</button>
+    <button class="cb-btn cb-btn-n" onclick="declineConsent()">DECLINE</button>
+  </div>
+</div>
+
+<script>
+const CONSENT_KEY = 'yrh_consent';
+function hasConsent(){ return localStorage.getItem(CONSENT_KEY)==='yes'; }
+function giveConsent(){ localStorage.setItem(CONSENT_KEY,'yes'); document.getElementById('consent-banner').style.display='none'; }
+function declineConsent(){ localStorage.setItem(CONSENT_KEY,'no'); document.getElementById('consent-banner').style.display='none'; }
+function showConsentBanner(){
+  if(localStorage.getItem(CONSENT_KEY)) return; // already decided
+  document.getElementById('consent-banner').style.display='flex';
+}
+</script>
+
+</body>
+</html>

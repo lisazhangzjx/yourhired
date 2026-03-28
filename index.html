@@ -1311,24 +1311,19 @@ async function confirmJudge(){
 // ROUND RESULT
 // ══════════════════════════════════════════════════════════════════
 function renderRoundResult(r){
-  const rn=r.currentRound, rd=r.rounds?.[rn]||{}, answers=rd.answers||{}, winnerPid=rd.winnerPick;
+  const rn=r.currentRound, rd=r.rounds?.[rn]||{}, winnerPid=rd.winnerPick;
+  const winnerCnum=r.players?.[winnerPid]?.cnum;
   document.getElementById('rres-m').textContent=`ROUND ${rn} / ${r.numRounds}`;
-  document.getElementById('rres-lbl').textContent=`Round ${rn} Results`;
+  document.getElementById('rres-lbl').textContent=`Round ${rn} — Result`;
   const container=document.getElementById('rres-candidates'); container.innerHTML='';
-  Object.entries(r.players||{}).filter(([,p])=>p.role!=='hire_manager').sort((a,b)=>a[1].cnum-b[1].cnum).forEach(([pid,p])=>{
-    const isWinner=pid===winnerPid;
-    const card=document.createElement('div');
-    card.className='rres-card'+(isWinner?' winner':'');
-    if(ME.host){
-      // HM only sees who was selected — no answer text
-      card.innerHTML=`<div class="rres-hdr"><span class="rres-n">Candidate ${p.cnum}</span>${isWinner?'<span class="win-badge">★ YOUR PICK</span>':''}</div>`;
-    } else {
-      // Candidates see the full answers
-      const ans=answers[pid]||'— no answer submitted —';
-      card.innerHTML=`<div class="rres-hdr"><span class="rres-n">Candidate ${p.cnum}</span>${isWinner?'<span class="win-badge">★ SELECTED</span>':''}</div><div class="rres-txt">${ans}</div>`;
-    }
-    container.appendChild(card);
-  });
+
+  // Just show who was picked — no answer text for anyone
+  const div=document.createElement('div');
+  div.style.cssText='text-align:center;padding:24px 0;';
+  div.innerHTML=`<div style="font-size:9px;letter-spacing:3px;text-transform:uppercase;color:var(--muted);margin-bottom:12px">Hire Manager selected</div>
+    <div style="font-family:'Bebas Neue';font-size:52px;letter-spacing:4px;color:var(--ink)">CANDIDATE ${winnerCnum||'?'}</div>`;
+  container.appendChild(div);
+
   if(ME.host){
     document.getElementById('rres-j-ctrl').style.display='block';
     document.getElementById('rres-p-wait').style.display='none';
@@ -1479,14 +1474,21 @@ function declineField(){
 
 // ── MEDIA UPLOAD ──
 document.getElementById('file-in').addEventListener('change',function(){
-  Array.from(this.files).forEach(f=>{
+  const promises = Array.from(this.files).map(f=>{
     const url=URL.createObjectURL(f);
     mwMediaFiles.push({type:f.type,url,name:f.name});
-    const reader=new FileReader();
-    reader.onload=ev=>{mwMediaB64.push({type:f.type,name:f.name,data:ev.target.result});};
-    reader.readAsDataURL(f);
+    return new Promise(resolve=>{
+      const reader=new FileReader();
+      reader.onload=ev=>{
+        mwMediaB64.push({type:f.type,name:f.name,data:ev.target.result});
+        resolve();
+      };
+      reader.onerror=()=>resolve(); // don't block on error
+      reader.readAsDataURL(f);
+    });
   });
-  this.value=''; renderMwGrid(); updateMwSubmit();
+  Promise.all(promises).then(()=>{ renderMwGrid(); updateMwSubmit(); });
+  this.value='';
 });
 
 function renderMwGrid(){
@@ -1545,8 +1547,11 @@ async function submitMeatwork(){
 
   // Compress and save photos (max 2, resized to keep under Firebase limits)
   try{
+    console.log('mwMediaB64 count before compress:', mwMediaB64.length);
     const compressed = await Promise.all(mwMediaB64.slice(0,2).map(m=>compressImage(m)));
+    console.log('Compressed sizes:', compressed.map(m=>Math.round(m.data.length/1024)+'KB'));
     await db.ref(`rooms/${ME.room}/meatwork/media`).set(compressed);
+    console.log('Media saved to Firebase OK');
   }catch(e){ console.warn('Photo save failed:', e.message); }
 
   // Run evaluation — key comes from LOCAL_API_KEY (decoded from Firebase in sub())
